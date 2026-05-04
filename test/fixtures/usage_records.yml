@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  landlord_id: MyString
+  call_type: MyString
+  plaid_request_id: MyString
+  property_id: MyString
+  unit_id: MyString
+  tenant_id: MyString
+  raw_cost_cents: 1
+  markup_cents: 1
+  total_charged_cents: 1
+  charged_to: MyString
+  status: MyString
+  called_at: 2026-04-29 15:27:33
+  notes: MyText
+
+two:
+  landlord_id: MyString
+  call_type: MyString
+  plaid_request_id: MyString
+  property_id: MyString
+  unit_id: MyString
+  tenant_id: MyString
+  raw_cost_cents: 1
+  markup_cents: 1
+  total_charged_cents: 1
+  charged_to: MyString
+  status: MyString
+  called_at: 2026-04-29 15:27:33
+  notes: MyText

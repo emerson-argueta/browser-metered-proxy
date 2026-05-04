@@ -1,0 +1,22 @@
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='RentflowBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-04-29 22:28:02.671786', '2026-04-29 22:28:02.671788') RETURNING "key" /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
+Migrating to CreateLandlordTokens (20260429222729)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "landlord_tokens" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "landlord_id" varchar, "token_digest" varchar, "last_used_at" datetime(6), "expires_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260429222729') RETURNING "version" /*application='RentflowBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='RentflowBackend'*/[0m
+Migrating to CreatePlaidItems (20260429222730)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "plaid_items" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "landlord_id" varchar, "access_token_encrypted" varchar, "access_token_encrypted_iv" varchar, "item_id" varchar, "institution_name" varchar, "account_id" varchar, "account_name" varchar, "account_type" varchar, "item_type" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260429222730') RETURNING "version" /*application='RentflowBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='RentflowBackend'*/[0m
+Migrating to CreateUsageRecords (20260429222733)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "usage_records" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "landlord_id" varchar, "call_type" varchar, "plaid_request_id" varchar, "property_id" varchar, "unit_id" varchar, "tenant_id" varchar, "raw_cost_cents" integer, "markup_cents" integer, "total_charged_cents" integer, "charged_to" varchar, "status" varchar, "called_at" datetime(6), "notes" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260429222733') RETURNING "version" /*application='RentflowBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m

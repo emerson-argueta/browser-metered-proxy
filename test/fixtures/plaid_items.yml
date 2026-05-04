@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  landlord_id: MyString
+  access_token_encrypted: MyString
+  access_token_encrypted_iv: MyString
+  item_id: MyString
+  institution_name: MyString
+  account_id: MyString
+  account_name: MyString
+  account_type: MyString
+  item_type: MyString
+
+two:
+  landlord_id: MyString
+  access_token_encrypted: MyString
+  access_token_encrypted_iv: MyString
+  item_id: MyString
+  institution_name: MyString
+  account_id: MyString
+  account_name: MyString
+  account_type: MyString
+  item_type: MyString
