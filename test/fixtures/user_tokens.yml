@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  landlord_id: MyString
+  user_id: MyString
   token_digest: MyString
   last_used_at: 2026-04-29 15:27:29
   expires_at: 2026-04-29 15:27:29
 
 two:
-  landlord_id: MyString
+  user_id: MyString
   token_digest: MyString
   last_used_at: 2026-04-29 15:27:29
   expires_at: 2026-04-29 15:27:29

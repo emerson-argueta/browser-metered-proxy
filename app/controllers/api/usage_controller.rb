@@ -2,7 +2,7 @@ module Api
   class UsageController < ApplicationController
     # GET /api/usage/log
     def log
-      records = UsageRecord.where(landlord_id: @landlord_id).order(called_at: :desc)
+      records = UsageRecord.where(user_id: @current_user_id).order(called_at: :desc)
       records = records.where(call_type: params[:call_type]) if params[:call_type].present?
       records = records.where(called_at: date_range) if params[:start_date].present?
 
@@ -21,7 +21,7 @@ module Api
 
     # GET /api/usage/summary
     def summary
-      all_records = UsageRecord.where(landlord_id: @landlord_id)
+      all_records = UsageRecord.where(user_id: @current_user_id)
       this_month = all_records.where(called_at: Time.current.beginning_of_month..)
 
       by_type = this_month.group(:call_type).sum(:total_charged_cents)
@@ -42,21 +42,19 @@ module Api
     end
 
     # POST /api/billing/usage
-    # Called by the WASM client to log usage after a Plaid call
+    # Called by the browser client to log usage after a proxied call
     def record
       rec = UsageRecord.create!(
-        landlord_id: @landlord_id,
+        user_id: @current_user_id,
         call_type: params.require(:call_type),
         plaid_request_id: params[:plaid_request_id],
         raw_cost_cents: params[:raw_cost_cents].to_i,
         markup_cents: params[:markup_cents].to_i,
         total_charged_cents: params[:total_charged_cents].to_i,
-        charged_to: params[:charged_to] || "landlord",
+        charged_to: params[:charged_to] || "user",
         status: params[:status] || "success",
         called_at: params[:called_at] || Time.current,
-        property_id: params[:property_id],
-        unit_id: params[:unit_id],
-        tenant_id: params[:tenant_id],
+        metadata_json: params[:metadata]&.to_json,
         notes: params[:notes]
       )
       render json: { id: rec.id }, status: :created
@@ -76,9 +74,7 @@ module Api
         called_at: r.called_at,
         call_type: r.call_type,
         plaid_request_id: r.plaid_request_id,
-        property_id: r.property_id,
-        unit_id: r.unit_id,
-        tenant_id: r.tenant_id,
+        metadata: r.metadata_json ? JSON.parse(r.metadata_json) : {},
         raw_cost_cents: r.raw_cost_cents,
         markup_cents: r.markup_cents,
         total_charged_cents: r.total_charged_cents,

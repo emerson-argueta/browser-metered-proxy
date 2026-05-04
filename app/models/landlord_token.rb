@@ -1,2 +1,0 @@
-class LandlordToken < ApplicationRecord
-end

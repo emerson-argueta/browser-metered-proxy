@@ -1,0 +1,40 @@
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Rails credentials
+/config/master.key
+/config/credentials/*.key
+
+# Bundler
+/.bundle
+/vendor/bundle
+
+# Logs and temp files
+/log/*.log
+/tmp/*
+!/tmp/.keep
+!/tmp/pids/.keep
+
+# Storage (SQLite databases, uploaded files)
+/storage/*
+!/storage/.keep
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-shm
+*.sqlite3-wal
+
+# Ruby LSP cache
+/.ruby-lsp
+
+# Test coverage
+/coverage
+
+# macOS
+.DS_Store
+
+# Editors
+*.sw[op]
+.idea/
+.vscode/

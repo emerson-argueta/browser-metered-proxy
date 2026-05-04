@@ -1,6 +1,6 @@
 require "test_helper"
 
-class LandlordTokenTest < ActiveSupport::TestCase
+class UserTokenTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

@@ -41,7 +41,7 @@ gem "plaid"
 # Encryption for Plaid access tokens at rest
 gem "attr_encrypted", "~> 4.0"
 
-# JSON Web Tokens for landlord authentication with the backend
+# JSON Web Tokens for user authentication
 gem "jwt"
 
 group :development, :test do

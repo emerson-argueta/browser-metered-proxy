@@ -1,7 +1,7 @@
-class CreatePlaidItems < ActiveRecord::Migration[8.1]
+class CreateExternalItems < ActiveRecord::Migration[8.1]
   def change
-    create_table :plaid_items do |t|
-      t.string :landlord_id
+    create_table :external_items do |t|
+      t.string :user_id, null: false
       t.string :access_token_encrypted
       t.string :access_token_encrypted_iv
       t.string :item_id
@@ -13,5 +13,8 @@ class CreatePlaidItems < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
+
+    add_index :external_items, :item_id, unique: true
+    add_index :external_items, :user_id
   end
 end
