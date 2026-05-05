@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     post "auth/login",    to: "auth#login"
 
     # Single capability dispatch
-    post "capability", to: "capability#dispatch"
+    post "capability", to: "capability#invoke"
 
     # Usage & billing (read-only)
     get "usage/log",     to: "usage#log"

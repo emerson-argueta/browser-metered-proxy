@@ -1,6 +1,6 @@
 module Api
   class CapabilityController < ApplicationController
-    def dispatch
+    def invoke
       result = CapabilityDispatcher.dispatch(
         capability_name: params.require(:capability),
         actor_id: @current_actor_id,

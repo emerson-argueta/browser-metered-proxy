@@ -20,3 +20,20 @@ Migrating to CreateUsageRecords (20260429222733)
   [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='RentflowBackend'*/[0m
   [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
   [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
+Migrating to CreateSubmissionRecords (20260429222734)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "submission_records" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "actor_id" varchar NOT NULL, "capability" varchar NOT NULL, "payload" text, "signature" varchar, "public_key" varchar, "status" varchar DEFAULT 'submitted' NOT NULL, "idempotency_key" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_submission_records_on_actor_id" ON "submission_records" ("actor_id") /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_submission_records_on_idempotency_key" ON "submission_records" ("idempotency_key") /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_submission_records_on_capability" ON "submission_records" ("capability") /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260429222734') RETURNING "version" /*application='RentflowBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='RentflowBackend'*/[0m
+Migrating to CreateActors (20260429222735)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "actors" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar NOT NULL, "password_digest" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_actors_on_email" ON "actors" ("email") /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260429222735') RETURNING "version" /*application='RentflowBackend'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
