@@ -1,12 +1,13 @@
 capabilities:
-  link_session:    "Capabilities::Plaid::LinkSession"
-  exchange_token:  "Capabilities::Plaid::ExchangeToken"
-  verify_income:   "Capabilities::Plaid::VerifyIncome"
-  initiate_transfer: "Capabilities::Plaid::InitiateTransfer"
-  transfer_status:   "Capabilities::Plaid::TransferStatus"
+  # Plaid
+  link_session:      "Plaid::LinkSession"
+  exchange_token:    "Plaid::ExchangeToken"
+  verify_income:     "Plaid::VerifyIncome"
+  initiate_transfer: "Plaid::InitiateTransfer"
+  transfer_status:   "Plaid::TransferStatus"
 
   # SendGrid
-  send_email: "Capabilities::Sendgrid::SendEmail"
+  send_email: "Sendgrid::SendEmail"
 
   # Submissions
-  submit_form: "Capabilities::Submissions::SubmitForm"
+  submit_form: "Submissions::SubmitForm"
