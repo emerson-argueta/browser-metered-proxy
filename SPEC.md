@@ -230,3 +230,4 @@ Any browser app that needs to proxy external API calls can point at it. The brow
 - [ ] Admin dashboard (usage across all users)
 - [ ] Generalize `ExternalItem` → `ProviderCredential` with encryption abstraction
 - [ ] SDK / client library for browser apps to call the proxy
+

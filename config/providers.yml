@@ -1,0 +1,17 @@
+plaid:
+  call_types:
+    link_session:
+      base_cost_cents: 50
+      markup_rate: 0.02
+    income_verify:
+      base_cost_cents: 150
+      markup_rate: 0.02
+    identity_check:
+      base_cost_cents: 100
+      markup_rate: 0.02
+    ach_transfer:
+      base_cost_cents: 25
+      markup_rate: 0.01
+    balance_check:
+      base_cost_cents: 10
+      markup_rate: 0.01

@@ -19,40 +19,14 @@ class ApplicationController < ActionController::API
     ENV.fetch("JWT_SECRET") { raise "JWT_SECRET env var not set" }
   end
 
-  def plaid_client
-    @plaid_client ||= begin
-      configuration = Plaid::Configuration.new
-      configuration.server_index = {
-        "sandbox" => Plaid::Configuration::Environment["sandbox"],
-        "development" => Plaid::Configuration::Environment["development"],
-        "production" => Plaid::Configuration::Environment["production"]
-      }.fetch(ENV.fetch("PLAID_ENV", "sandbox"))
-      api_client = Plaid::ApiClient.new(configuration)
-      api_client.default_headers["PLAID-CLIENT-ID"] = ENV.fetch("PLAID_CLIENT_ID")
-      api_client.default_headers["PLAID-SECRET"] = ENV.fetch("PLAID_SECRET")
-      Plaid::PlaidApi.new(api_client)
-    end
-  end
-
-  MARKUP_RATES = {
-    "link_session" => 0.02,
-    "income_verify" => 0.02,
-    "identity_check" => 0.02,
-    "ach_transfer" => 0.01,
-    "balance_check" => 0.01
-  }.freeze
-
-  PLAID_BASE_COSTS = {
-    "link_session" => 50,
-    "income_verify" => 150,
-    "identity_check" => 100,
-    "ach_transfer" => 25,
-    "balance_check" => 10
-  }.freeze
+  PROVIDERS_CONFIG = YAML.load_file(Rails.root.join("config/providers.yml")).freeze
 
   def log_usage(call_type:, provider:, external_request_id: nil, status: "success", charged_to: "user", metadata: {})
-    raw = PLAID_BASE_COSTS[call_type] || 0
-    markup = (raw * MARKUP_RATES[call_type]).to_i
+    cost_config = PROVIDERS_CONFIG.dig(provider, "call_types", call_type) || {}
+    raw = cost_config["base_cost_cents"] || 0
+    markup_rate = cost_config["markup_rate"] || 0
+    markup = (raw * markup_rate).to_i
+
     UsageRecord.create!(
       user_id: @current_user_id,
       provider: provider,
