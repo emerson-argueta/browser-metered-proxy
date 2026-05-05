@@ -1,7 +1,7 @@
 module Capabilities
   module Plaid
     class ExchangeToken < BaseCapability
-      include PlaidCapability
+      include Capabilities::Plaid::PlaidCapability
       DEFINITION = {
         capability: "exchange_token",
         version: "1.0",

@@ -1,7 +1,7 @@
 module Capabilities
   module Plaid
     class InitiateTransfer < BaseCapability
-      include PlaidCapability
+      include Capabilities::Plaid::PlaidCapability
       DEFINITION = {
         capability: "initiate_transfer",
         version: "1.0",

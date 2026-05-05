@@ -1,7 +1,7 @@
 module Capabilities
   module Sendgrid
     class SendEmail < BaseCapability
-      include SendgridCapability
+      include Capabilities::Sendgrid::SendgridCapability
 
       DEFINITION = {
         capability: "send_email",

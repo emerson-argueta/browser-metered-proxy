@@ -1,7 +1,7 @@
 module Capabilities
   module Plaid
     class VerifyIncome < BaseCapability
-      include PlaidCapability
+      include Capabilities::Plaid::PlaidCapability
       DEFINITION = {
         capability: "verify_income",
         version: "1.0",

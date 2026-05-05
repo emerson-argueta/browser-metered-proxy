@@ -1,7 +1,7 @@
 module Capabilities
   module Plaid
     class TransferStatus < BaseCapability
-      include PlaidCapability
+      include Capabilities::Plaid::PlaidCapability
 
       DEFINITION = {
         capability: "transfer_status",

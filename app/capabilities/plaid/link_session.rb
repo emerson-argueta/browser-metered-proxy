@@ -1,7 +1,7 @@
 module Capabilities
   module Plaid
     class LinkSession < BaseCapability
-      include PlaidCapability
+      include Capabilities::Plaid::PlaidCapability
       DEFINITION = {
         capability: "link_session",
         version: "1.0",
