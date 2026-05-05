@@ -68,14 +68,19 @@ Response always includes cost fields:
 }
 ```
 
-### Built-in capabilities
+### Plaid — reference implementation
 
-| Capability | Provider | Description |
+Plaid is included as a reference implementation. It demonstrates the full capability pattern — passthrough billing, encrypted token storage, webhook handling, and free status checks — so adding your own provider is a matter of following the same structure.
+
+| Capability | Cost type | Description |
 |---|---|---|
-| `link_session` | Plaid | Create a Plaid Link token |
-| `exchange_token` | Plaid | Exchange public token, store access token |
-| `verify_income` | Plaid | Income verification |
-| `initiate_transfer` | Plaid | ACH transfer |
+| `link_session` | passthrough | Create a Plaid Link token |
+| `exchange_token` | free | Exchange public token, store access token encrypted |
+| `verify_income` | passthrough | Income verification |
+| `initiate_transfer` | passthrough | ACH transfer |
+| `transfer_status` | free | Check transfer status |
+
+To add Stripe, OpenAI, or any other provider: follow the same pattern in `app/capabilities/[provider]/`. The Plaid capabilities are the example — delete them if you don't need Plaid.
 
 ## Setup
 

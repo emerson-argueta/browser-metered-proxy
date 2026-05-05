@@ -3,3 +3,4 @@ capabilities:
   exchange_token:  "Capabilities::Plaid::ExchangeToken"
   verify_income:   "Capabilities::Plaid::VerifyIncome"
   initiate_transfer: "Capabilities::Plaid::InitiateTransfer"
+  transfer_status:   "Capabilities::Plaid::TransferStatus"
