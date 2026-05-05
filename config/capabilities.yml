@@ -1,0 +1,5 @@
+capabilities:
+  link_session:    "Capabilities::Plaid::LinkSession"
+  exchange_token:  "Capabilities::Plaid::ExchangeToken"
+  verify_income:   "Capabilities::Plaid::VerifyIncome"
+  initiate_transfer: "Capabilities::Plaid::InitiateTransfer"

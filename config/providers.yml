@@ -1,17 +1,27 @@
-plaid:
-  call_types:
+providers:
+  plaid:
     link_session:
       base_cost_cents: 50
-      markup_rate: 0.02
-    income_verify:
+      markup_percent: 2
+    verify_income:
       base_cost_cents: 150
-      markup_rate: 0.02
-    identity_check:
+      markup_percent: 2
+    verify_identity:
       base_cost_cents: 100
-      markup_rate: 0.02
-    ach_transfer:
+      markup_percent: 2
+    initiate_transfer:
       base_cost_cents: 25
-      markup_rate: 0.01
+      markup_percent: 1
     balance_check:
       base_cost_cents: 10
-      markup_rate: 0.01
+      markup_percent: 1
+
+  openai:
+    chat_completion:
+      base_cost_cents: 0
+      markup_percent: 10
+
+  stripe:
+    charge:
+      base_cost_cents: 0
+      markup_percent: 0.5

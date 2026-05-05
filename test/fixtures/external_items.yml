@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user_id: user_1
+  actor_id: actor_1
   provider: plaid
   item_type: bank_account
   external_id: item_abc123
@@ -9,7 +9,7 @@ one:
   access_token_encrypted_iv: MyString
 
 two:
-  user_id: user_1
+  actor_id: actor_1
   provider: plaid
   item_type: income_verification
   external_id: item_def456

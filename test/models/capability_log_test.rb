@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UsageRecordTest < ActiveSupport::TestCase
+class CapabilityLogTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
