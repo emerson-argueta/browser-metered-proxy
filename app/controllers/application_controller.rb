@@ -50,13 +50,14 @@ class ApplicationController < ActionController::API
     "balance_check" => 10
   }.freeze
 
-  def log_usage(call_type:, plaid_request_id: nil, status: "success", charged_to: "user", metadata: {})
+  def log_usage(call_type:, provider:, external_request_id: nil, status: "success", charged_to: "user", metadata: {})
     raw = PLAID_BASE_COSTS[call_type] || 0
     markup = (raw * MARKUP_RATES[call_type]).to_i
     UsageRecord.create!(
       user_id: @current_user_id,
+      provider: provider,
       call_type: call_type,
-      plaid_request_id: plaid_request_id,
+      external_request_id: external_request_id,
       raw_cost_cents: raw,
       markup_cents: markup,
       total_charged_cents: raw + markup,

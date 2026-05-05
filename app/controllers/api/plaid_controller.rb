@@ -2,6 +2,8 @@ module Api
   class PlaidController < ApplicationController
     skip_before_action :authenticate_user!, only: [:webhooks]
 
+    PROVIDER = "plaid"
+
     # POST /api/plaid/link_token
     def link_token
       products = params[:products] || ["transactions"]
@@ -16,7 +18,7 @@ module Api
       })
 
       response = plaid_client.link_token_create(request_obj)
-      log_usage(call_type: "link_session", plaid_request_id: response.request_id)
+      log_usage(call_type: "link_session", provider: PROVIDER, external_request_id: response.request_id)
 
       render json: { link_token: response.link_token }
     rescue Plaid::ApiError => e
@@ -27,23 +29,25 @@ module Api
     # Exchanges a public token for an access token (stored encrypted server-side)
     def exchange_token
       public_token = params.require(:public_token)
-      item_type = params[:item_type] || "owner"
 
       request_obj = Plaid::ItemPublicTokenExchangeRequest.new(public_token: public_token)
       response = plaid_client.item_public_token_exchange(request_obj)
 
       ExternalItem.create!(
         user_id: @current_user_id,
+        provider: PROVIDER,
+        external_id: response.item_id,
+        item_type: params[:item_type],
         access_token_encrypted: response.access_token,
-        item_id: response.item_id,
-        institution_name: params[:institution_name],
-        account_id: params[:account_id],
-        account_name: params[:account_name],
-        account_type: params[:account_type],
-        item_type: item_type
+        metadata_json: {
+          institution_name: params[:institution_name],
+          account_id: params[:account_id],
+          account_name: params[:account_name],
+          account_type: params[:account_type]
+        }.compact.to_json
       )
 
-      render json: { item_id: response.item_id, status: "connected" }
+      render json: { external_id: response.item_id, status: "connected" }
     rescue Plaid::ApiError => e
       render json: { error: e.message }, status: :unprocessable_entity
     end
@@ -51,7 +55,7 @@ module Api
     # POST /api/plaid/income/verify
     # Initiates income verification for an applicant
     def income_verify
-      item = ExternalItem.find_by!(user_id: @current_user_id, item_type: "applicant", item_id: params[:item_id])
+      item = ExternalItem.find_by!(user_id: @current_user_id, provider: PROVIDER, external_id: params[:external_id])
 
       request_obj = Plaid::CreditPayrollIncomeGetRequest.new(
         user_token: item.access_token_encrypted
@@ -60,7 +64,8 @@ module Api
 
       log_usage(
         call_type: "income_verify",
-        plaid_request_id: response.request_id,
+        provider: PROVIDER,
+        external_request_id: response.request_id,
         charged_to: params[:charged_to] || "user",
         metadata: { entity_id: params[:entity_id] }.compact
       )
@@ -73,11 +78,12 @@ module Api
     # POST /api/plaid/transfer/initiate
     # Initiates an ACH transfer
     def transfer_initiate
-      owner_item = ExternalItem.find_by!(user_id: @current_user_id, item_type: "owner")
+      owner_item = ExternalItem.find_by!(user_id: @current_user_id, provider: PROVIDER, item_type: "bank_account")
+      metadata = owner_item.metadata_json ? JSON.parse(owner_item.metadata_json) : {}
 
       request_obj = Plaid::TransferCreateRequest.new({
         access_token: owner_item.access_token_encrypted,
-        account_id: owner_item.account_id,
+        account_id: metadata["account_id"],
         type: "credit",
         network: "ach",
         amount: params.require(:amount).to_s,
@@ -92,7 +98,8 @@ module Api
 
       log_usage(
         call_type: "ach_transfer",
-        plaid_request_id: response.request_id,
+        provider: PROVIDER,
+        external_request_id: response.request_id,
         metadata: { entity_id: params[:entity_id] }.compact
       )
 
@@ -115,11 +122,9 @@ module Api
     end
 
     # POST /api/plaid/webhooks
-    # Receives Plaid payment status updates — no auth required, verified by webhook verification
+    # Receives Plaid status updates — no auth required, verified by webhook verification
     def webhooks
-      webhook_type = params[:webhook_type]
-
-      case webhook_type
+      case params[:webhook_type]
       when "TRANSFER"
         handle_transfer_webhook(params)
       when "INCOME"
@@ -132,9 +137,7 @@ module Api
     private
 
     def handle_transfer_webhook(data)
-      transfer_id = data[:transfer_id]
-      new_status = data[:new_transfer_status]
-      Rails.logger.info "Transfer #{transfer_id} status → #{new_status}"
+      Rails.logger.info "Transfer #{data[:transfer_id]} status → #{data[:new_transfer_status]}"
     end
 
     def handle_income_webhook(data)

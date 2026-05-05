@@ -1,25 +1,25 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user_id: MyString
+  user_id: user_1
+  provider: plaid
   call_type: link_session
-  plaid_request_id: MyString
-  raw_cost_cents: 1
+  external_request_id: req_abc123
+  raw_cost_cents: 50
   markup_cents: 1
-  total_charged_cents: 1
+  total_charged_cents: 51
   charged_to: user
   status: success
   called_at: 2026-04-29 15:27:33
-  notes: MyText
 
 two:
-  user_id: MyString
+  user_id: user_1
+  provider: plaid
   call_type: ach_transfer
-  plaid_request_id: MyString
-  raw_cost_cents: 1
+  external_request_id: req_def456
+  raw_cost_cents: 25
   markup_cents: 1
-  total_charged_cents: 1
-  charged_to: user
+  total_charged_cents: 26
+  charged_to: end_customer
   status: success
   called_at: 2026-04-29 15:27:33
-  notes: MyText

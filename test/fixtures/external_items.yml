@@ -1,23 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user_id: MyString
+  user_id: user_1
+  provider: plaid
+  item_type: bank_account
+  external_id: item_abc123
   access_token_encrypted: MyString
   access_token_encrypted_iv: MyString
-  item_id: MyString
-  institution_name: MyString
-  account_id: MyString
-  account_name: MyString
-  account_type: MyString
-  item_type: owner
 
 two:
-  user_id: MyString
+  user_id: user_1
+  provider: plaid
+  item_type: income_verification
+  external_id: item_def456
   access_token_encrypted: MyString
   access_token_encrypted_iv: MyString
-  item_id: MyString2
-  institution_name: MyString
-  account_id: MyString
-  account_name: MyString
-  account_type: MyString
-  item_type: applicant

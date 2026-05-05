@@ -2,8 +2,9 @@ class CreateUsageRecords < ActiveRecord::Migration[8.1]
   def change
     create_table :usage_records do |t|
       t.string :user_id, null: false
+      t.string :provider
       t.string :call_type
-      t.string :plaid_request_id
+      t.string :external_request_id
       t.integer :raw_cost_cents
       t.integer :markup_cents
       t.integer :total_charged_cents
@@ -18,5 +19,6 @@ class CreateUsageRecords < ActiveRecord::Migration[8.1]
 
     add_index :usage_records, :user_id
     add_index :usage_records, :called_at
+    add_index :usage_records, :provider
   end
 end

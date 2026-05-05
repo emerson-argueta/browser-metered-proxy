@@ -3,6 +3,7 @@ module Api
     # GET /api/usage/log
     def log
       records = UsageRecord.where(user_id: @current_user_id).order(called_at: :desc)
+      records = records.where(provider: params[:provider]) if params[:provider].present?
       records = records.where(call_type: params[:call_type]) if params[:call_type].present?
       records = records.where(called_at: date_range) if params[:start_date].present?
 
@@ -25,6 +26,7 @@ module Api
       this_month = all_records.where(called_at: Time.current.beginning_of_month..)
 
       by_type = this_month.group(:call_type).sum(:total_charged_cents)
+      by_provider = this_month.group(:provider).sum(:total_charged_cents)
       last_12 = (0..11).map do |i|
         start = i.months.ago.beginning_of_month
         finish = i.months.ago.end_of_month
@@ -37,6 +39,7 @@ module Api
         total_all_time_cents: all_records.sum(:total_charged_cents),
         calls_this_month: this_month.count,
         by_call_type: by_type,
+        by_provider: by_provider,
         last_12_months: last_12
       }
     end
@@ -46,8 +49,9 @@ module Api
     def record
       rec = UsageRecord.create!(
         user_id: @current_user_id,
+        provider: params[:provider],
         call_type: params.require(:call_type),
-        plaid_request_id: params[:plaid_request_id],
+        external_request_id: params[:external_request_id],
         raw_cost_cents: params[:raw_cost_cents].to_i,
         markup_cents: params[:markup_cents].to_i,
         total_charged_cents: params[:total_charged_cents].to_i,
@@ -72,8 +76,9 @@ module Api
       {
         id: r.id,
         called_at: r.called_at,
+        provider: r.provider,
         call_type: r.call_type,
-        plaid_request_id: r.plaid_request_id,
+        external_request_id: r.external_request_id,
         metadata: r.metadata_json ? JSON.parse(r.metadata_json) : {},
         raw_cost_cents: r.raw_cost_cents,
         markup_cents: r.markup_cents,
