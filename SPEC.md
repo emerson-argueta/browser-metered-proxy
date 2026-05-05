@@ -28,14 +28,15 @@ A **Rails API-only app** that acts as a secure, metered, capability-based proxy:
 ```
 Browser App (local-first, WASM/SPA)
   │
-  │  { actor_id, capability, payload, signature }
+  │  Authorization: Bearer <jwt>
+  │  POST /api/capability { capability, payload }
   ▼
 browser-metered-proxy
-  ├── Validates signature + timestamp
-  ├── Checks credit balance
+  ├── Validates JWT → identifies actor
+  ├── Validates capability + payload schema
   ├── Executes capability (validate → meter → store → emit)
   ├── Logs: raw provider cost + markup + total charged (always separate)
-  └── Emits event → workflow engine → downstream capabilities
+  └── Returns structured result
         │
         ▼
   External APIs (Plaid, Stripe, OpenAI, SendGrid, etc.)
@@ -45,9 +46,9 @@ It is intentionally **minimal**. It does not:
 
 - Store application data (that lives in the browser's SQLite)
 - Render any UI
-- Manage user sessions beyond JWT/signature validation
+- Manage user sessions beyond JWT validation
 - Contain business logic that belongs in the browser app
-- Bundle multiple concerns into a single operation
+- Chain capabilities together or orchestrate workflows (the browser app owns that)
 
 ---
 
@@ -55,7 +56,7 @@ It is intentionally **minimal**. It does not:
 
 ### 1. Authentication
 
-Every request carries either a JWT (`Authorization: Bearer`) or a signed envelope (Ed25519). The identity ties every capability execution and usage record to a specific actor.
+Every request carries a JWT (`Authorization: Bearer`). The identity ties every capability execution and usage record to a specific actor. Tokens are issued on registration/login.
 
 ### 2. Secret Storage
 
@@ -63,13 +64,13 @@ API keys for external services live only here — in environment variables. The 
 
 ### 3. Capability Dispatch
 
-Receives a signed envelope from the browser, routes it to the named capability, executes it, and returns a structured result. Every capability does exactly one thing: validate, meter, store, emit.
+Receives a request from the browser, routes it to the named capability, executes it, and returns a structured result. Every capability does exactly one thing: validate → meter → call provider → store → log.
 
 ### 4. Transparent Metered Billing
 
 Every capability execution is logged with three cost fields — always:
 
-- `raw_cost_cents` — what the provider actually charged (e.g. Plaid's fee)
+- `raw_cost_cents` — what the provider actually charged
 - `markup_cents` — the proxy operator's markup on top
 - `total_charged_cents` — what the actor actually pays
 
@@ -77,11 +78,11 @@ These are never collapsed into a single number. The browser app reads this log t
 
 ### 5. Webhook Relay
 
-External services post status updates to this proxy. Webhooks are validated, mapped to the relevant capability log entry, and relayed to the browser app via polling or Server-Sent Events.
+External services post status updates to this proxy. Webhooks are validated and stored so the browser app can poll for status updates.
 
-### 6. Event Bus & Workflow Engine
+### 6. Submission Integrity (Optional)
 
-After a capability succeeds it emits a structured event. The workflow engine maps events to downstream capability chains — enabling multi-step workflows without coupling capabilities to each other.
+For capabilities that handle sensitive form submissions (e.g. `submit_application`), the browser can sign the payload with an Ed25519 key. The proxy verifies the signature and stores it alongside the submission — providing cryptographic proof of exactly what was submitted and non-repudiation. This is for **payload integrity**, not identification (JWT handles that).
 
 ---
 
@@ -93,168 +94,113 @@ A capability is the atomic unit of work in this proxy. Every action a browser ap
 
 - Has a unique name and version
 - Declares its cost upfront (type, base cost, markup)
-- Does exactly one thing: validate → meter → store → emit
-- Does **not** call other capabilities directly
-- Does **not** send emails, trigger payments, or perform side effects beyond emitting an event
+- Does exactly one thing: validate → meter → call provider → store → log
+- Does **not** call other capabilities or trigger workflows
+- Does **not** contain business logic about what happens next
 
-### Capability Definition Schema
+### Capability Definition
 
-```json
-{
-  "capability": "verify_income",
-  "version": "1.0",
-  "description": "Verify tenant income via Plaid Income product",
-  "provider": "plaid",
-  "cost": {
-    "type": "passthrough",
-    "base_cost_cents": 150,
-    "markup_percent": 2,
-    "markup_cents": 3,
-    "total_cents": 153
-  }
-}
+```ruby
+class VerifyIncome < BaseCapability
+  DEFINITION = {
+    capability: "verify_income",
+    version: "1.0",
+    provider: "plaid",
+    cost: {
+      type: "passthrough",
+      base_cost_cents: 150,
+      markup_percent: 2
+    }
+  }.freeze
+
+  def call(actor_id:, payload:)
+    # validate → call provider → store result → return
+  end
+end
 ```
 
 ### Cost Types
 
 | Type | Meaning | Use case |
 |------|---------|----------|
-| `passthrough` | Provider's real cost + markup, shown separately | All Plaid/Stripe calls |
+| `passthrough` | Provider's real cost + markup, shown separately | All Plaid/Stripe/OpenAI calls |
 | `fixed` | Fixed credit amount regardless of provider cost | Simple operations |
 | `free` | No charge | Auth, status checks, log reads |
-| `variable` | Cost depends on payload (e.g. per attachment) | Document storage, batch ops |
+| `variable` | Cost depends on payload (e.g. token count) | OpenAI completions, batch ops |
 
-**For all `passthrough` capabilities:** `base_cost_cents`, `markup_cents`, and `total_charged_cents` are always stored and always returned in the response. This is non-negotiable — it is the core transparency promise of this project.
-
-### The Signed Envelope
-
-All capability requests use a signed envelope:
-
-```json
-{
-  "actor_id": "ed25519_public_key_or_jwt_user_id",
-  "timestamp": 1710000000,
-  "capability": "verify_income",
-  "payload": {},
-  "signature": "base64_ed25519_signature"
-}
-```
-
-**Replay protection:** reject if timestamp is older than ±5 minutes, or if signature hash has already been processed (idempotency table).
-
-**Signature verification:**
-```
-verify(signature, canonical(actor_id + timestamp + capability + payload))
-```
+For all `passthrough` capabilities: `base_cost_cents`, `markup_cents`, and `total_charged_cents` are always stored and always returned in the response. This is the core transparency promise of this project.
 
 ### Capability Execution Flow
 
-Every capability follows this exact sequence — no exceptions:
+Every capability follows this exact sequence:
 
 ```
-Step 1: Validate envelope
-  → signature valid?
-  → timestamp within window?
+Step 1: Validate
+  → JWT valid? actor identified?
   → capability exists?
   → payload matches schema?
+  → (submission capabilities only) Ed25519 signature valid?
 
-Step 2: Check credit balance
-  → actor has sufficient credits for capability cost?
-  → fail with insufficient_funds if not
-
-Step 3: Call external provider (if applicable)
+Step 2: Call external provider (if applicable)
   → use server-side API key
   → record raw_cost_cents from provider response
 
-Step 4: Meter — deduct credits + log the call
-  → deduct from actor's credit balance
-  → write CapabilityLog record with all three cost fields
+Step 3: Meter — log the call
+  → write CapabilityLog with all three cost fields
   → this record is immutable once written
 
-Step 5: Store result
+Step 4: Store result
   → write to appropriate model (ExternalItem, SubmissionRecord, etc.)
-  → mode A: structured JSON
-  → mode B: opaque encrypted blob (recommended for sensitive payloads)
+  → regular capabilities: structured JSON
+  → submission capabilities: opaque encrypted blob (browser encrypts before sending)
 
-Step 6: Emit event
-  → { event: "income.verified", actor_id: ..., submission_id: ..., ... }
-  → workflow engine picks up from here
+Step 5: Return
+  → { capability_log_id, status, result, raw_cost_cents, markup_cents, total_charged_cents }
 ```
 
----
+### Submission Capabilities and Ed25519
 
-## Workflow Engine
+For capabilities that store sensitive user-submitted data (e.g. `submit_application`), the browser optionally signs the payload before sending:
 
-### What Workflows Are
-
-Workflows are declarative chains of capabilities triggered by events. They are how multi-step business processes are composed without coupling individual capabilities to each other.
-
-A capability never calls another capability. It only emits an event. The workflow engine maps events to the next capability to invoke.
-
-### Workflow Configuration
-
-```yaml
-# config/workflows.yml
-
-workflows:
-
-  application.submitted:
-    - capability: notify_landlord
-    - capability: queue_screening     # only if auto_screening_enabled in metadata
-
-  income.verified:
-    - capability: update_application_status
-
-  identity.verified:
-    - capability: update_application_status
-
-  transfer.initiated:
-    - capability: poll_transfer_status
-
-  transfer.completed:
-    - capability: update_payment_record
-    - capability: generate_receipt
-    - capability: notify_tenant
-
-  transfer.failed:
-    - capability: notify_landlord
-    - capability: notify_tenant
+```json
+{
+  "capability": "submit_application",
+  "payload": { "encrypted_blob": "..." },
+  "signature": {
+    "algorithm": "ed25519",
+    "public_key": "base64...",
+    "value": "base64..."
+  }
+}
 ```
 
-### Workflow Execution Rules
-
-- Workflows execute asynchronously (via Active Job)
-- Each downstream capability runs independently — one failure does not block others
-- Every workflow execution is logged in `WorkflowLog`
-- Workflows are configuration, not code — adding a new downstream step is a one-line change to `workflows.yml`
+The proxy verifies the signature and stores it alongside the `SubmissionRecord`. This gives the system a tamper-proof audit trail of exactly what the actor submitted — the actor cannot later claim the submission contained different data. JWT still handles identification; Ed25519 handles payload integrity.
 
 ---
 
 ## Transparent Billing — The Core Promise
 
-This is the primary reason this project exists. Every capability execution that touches an external provider produces a billing record with three separate cost fields. These are never collapsed.
+Every capability execution that touches an external provider produces a billing record with three separate cost fields. These are never collapsed.
 
 ### CapabilityLog Record
 
 ```ruby
 CapabilityLog:
   id
-  actor_id                  # who invoked it
+  actor_id                  # who invoked it (from JWT)
   capability                # "verify_income", "initiate_transfer", etc.
   version                   # capability version at time of call
   provider                  # "plaid", "stripe", "openai", nil (for free capabilities)
   provider_request_id       # provider's own request ID for cross-referencing
-  
+
   # Cost fields — always all three, always separate
-  raw_cost_cents            # what the provider charged (0 for free/fixed capabilities)
+  raw_cost_cents            # what the provider charged (0 for free/fixed)
   markup_cents              # operator markup
-  total_charged_cents       # raw + markup — what actor was actually charged
-  
+  total_charged_cents       # raw + markup
+
   charged_to                # "actor" | "end_customer" (pass-through billing)
-  
-  # Context — opaque IDs from the browser app, not interpreted by the proxy
-  metadata_json             # { property_id, tenant_id, listing_id, ... }
-  
+  metadata_json             # opaque context from browser app (entity IDs, etc.)
+
   status                    # "success" | "failed"
   error_code                # nil on success
   invoked_at
@@ -263,80 +209,48 @@ CapabilityLog:
 
 ### What the Browser App Displays
 
-The browser app calls `GET /api/usage/log` and `GET /api/usage/summary` to build its cost transparency dashboard. The log always has enough information to show:
-
 ```
-Date          Capability           For                Base Cost  Markup  Total
-Apr 29        verify_income        John Smith (app)   $1.50      $0.03   $1.53
-Apr 29        submit_application   123 Oak St         $0.00      $0.00   $0.00
-Apr 28        initiate_transfer    April Rent         $0.25      $0.003  $0.253
-Apr 28        verify_identity      Jane Doe (app)     $1.00      $0.02   $1.02
-Apr 27        link_session         Landlord setup     $0.50      $0.01   $0.51
+Date          Capability           Base Cost  Markup   Total
+Apr 29        verify_income        $1.50      $0.03    $1.53
+Apr 29        submit_application   $0.00      $0.00    $0.00
+Apr 28        initiate_transfer    $0.25      $0.003   $0.253
+Apr 28        verify_identity      $1.00      $0.02    $1.02
+Apr 27        link_session         $0.50      $0.01    $0.51
 ```
 
-The proxy guarantees this data is always available and always broken into its component parts. Displaying it is the browser app's responsibility.
+Raw cost, markup, and total are always shown separately. The proxy guarantees this data is available; displaying it is the browser app's responsibility.
 
 ---
 
 ## Data Models
 
 ```ruby
-# Every capability execution — the billing and audit record
+# Every capability execution — billing and audit record
 CapabilityLog:
   actor_id, capability, version, provider, provider_request_id
   raw_cost_cents, markup_cents, total_charged_cents
   charged_to, metadata_json, status, error_code
   invoked_at, completed_at
 
-# Credit balance per actor
-CreditAccount:
-  actor_id
-  balance_cents             # current available balance
-  lifetime_charged_cents    # all-time total charged
-  updated_at
-
-# Credit top-up history
-CreditTransaction:
-  actor_id
-  amount_cents
-  type                      # "topup" | "deduction" | "refund"
-  capability_log_id         # nil for topups
-  created_at
-
 # Encrypted provider credentials (access tokens, etc.)
 ExternalItem:
   actor_id
   provider                  # "plaid", "stripe", etc.
-  item_type                 # provider-specific type
+  item_type                 # provider-specific type string
   external_id               # provider's own ID
-  access_token_encrypted    # AES-256-GCM encrypted at rest
+  access_token_encrypted    # encrypted at rest
   metadata_json
   created_at
 
-# Opaque submission storage (for capabilities like submit_application)
+# Opaque submission storage
 SubmissionRecord:
   id, actor_id, capability
-  listing_id                # or equivalent context identifier
-  payload                   # encrypted blob (mode B) or structured JSON (mode A)
+  payload                   # encrypted blob or structured JSON
+  signature                 # Ed25519 signature (nil if not signed)
+  public_key                # actor's public key at time of submission
   status                    # "submitted" | "reviewed" | "accepted" | "rejected"
   idempotency_key
   created_at
-
-# Event emission log
-EventLog:
-  id, event, actor_id
-  capability_log_id         # the capability that emitted this event
-  payload_json              # event data (no PII)
-  processed_at
-  created_at
-
-# Workflow execution log
-WorkflowLog:
-  id, event_log_id
-  capability                # downstream capability that was invoked
-  status                    # "pending" | "success" | "failed"
-  error_message
-  executed_at
 ```
 
 ---
@@ -347,11 +261,12 @@ WorkflowLog:
 
 ```
 POST /api/capability
-  Body: signed envelope { actor_id, timestamp, capability, payload, signature }
-  Returns: { status, submission_id?, metered_cost, raw_cost_cents, markup_cents }
+  Authorization: Bearer <jwt>
+  Body: { capability, payload, signature? }
+  Returns: { capability_log_id, status, result, raw_cost_cents, markup_cents, total_charged_cents }
 ```
 
-All capability invocations go through this single endpoint. The dispatcher looks up the capability by name, validates the envelope, and routes execution.
+All capability invocations go through this single endpoint. The dispatcher looks up the capability by name and routes execution.
 
 ### Auth
 
@@ -372,10 +287,9 @@ GET  /api/usage/summary    → {
                                this_month_raw_cost_cents,
                                this_month_markup_cents,
                                all_time_total_cents,
-                               breakdown_by_capability: [...],
-                               breakdown_by_provider: [...],
-                               call_count_this_month,
-                               projected_next_month_cents
+                               breakdown_by_capability,
+                               breakdown_by_provider,
+                               call_count_this_month
                              }
 ```
 
@@ -384,14 +298,7 @@ GET  /api/usage/summary    → {
 ```
 POST /api/webhooks/plaid
 POST /api/webhooks/stripe
-POST /api/webhooks/:provider    → generic webhook receiver
-```
-
-### Credits
-
-```
-GET  /api/credits/balance       → current balance + lifetime totals
-POST /api/credits/topup         → add credits (via Stripe charge)
+POST /api/webhooks/:provider
 ```
 
 ---
@@ -400,162 +307,83 @@ POST /api/credits/topup         → add credits (via Stripe charge)
 
 ```
 app/
-├── capabilities/               # one file per capability
-│   ├── base_capability.rb      # shared: validate → meter → store → emit
-│   ├── submit_application.rb
-│   ├── verify_income.rb
-│   ├── verify_identity.rb
-│   ├── initiate_transfer.rb
-│   ├── link_session.rb
-│   ├── exchange_token.rb
-│   ├── poll_transfer_status.rb
-│   ├── notify_landlord.rb
-│   ├── notify_tenant.rb
-│   └── generate_receipt.rb
+├── capabilities/
+│   ├── base_capability.rb        # shared lifecycle: validate → meter → store → log
+│   ├── plaid/
+│   │   ├── link_session.rb
+│   │   ├── exchange_token.rb
+│   │   ├── verify_income.rb
+│   │   ├── verify_identity.rb
+│   │   └── initiate_transfer.rb
+│   └── submissions/
+│       └── submit_application.rb
 │
 ├── controllers/
 │   └── api/
 │       ├── capability_controller.rb   # single dispatch endpoint
 │       ├── auth_controller.rb
 │       ├── usage_controller.rb
-│       ├── credits_controller.rb
 │       └── webhooks/
 │           ├── plaid_controller.rb
 │           └── stripe_controller.rb
 │
 ├── models/
 │   ├── capability_log.rb
-│   ├── credit_account.rb
-│   ├── credit_transaction.rb
 │   ├── external_item.rb
-│   ├── submission_record.rb
-│   ├── event_log.rb
-│   └── workflow_log.rb
+│   └── submission_record.rb
 │
 └── services/
-    ├── capability_dispatcher.rb    # envelope validation + capability routing
-    ├── event_bus.rb                # emit events + trigger workflows
-    ├── workflow_engine.rb          # reads workflows.yml, invokes downstream caps
-    ├── signature_verifier.rb       # Ed25519 verification + replay protection
+    ├── capability_dispatcher.rb    # JWT validation + capability routing
+    ├── signature_verifier.rb       # Ed25519 verification for submission capabilities
     └── cost_calculator.rb          # base_cost + markup → total, per cost type
 
 config/
-├── capabilities.yml            # capability registry (name → class mapping)
-├── providers.yml               # provider cost config (base costs + default markups)
-└── workflows.yml               # event → downstream capability chains
+├── capabilities.yml               # capability registry (name → class mapping)
+├── providers.yml                  # provider cost config (base costs + markups)
+└── workflows.yml                  # (future) event → downstream capability chains
 ```
 
 ---
 
 ## Adding a New Integration
 
-1. Create `app/capabilities/[name].rb` inheriting from `BaseCapability`
-2. Define `DEFINITION` with capability name, version, description, cost
-3. Implement `call(actor_id:, payload:, envelope:)` — validate, call provider, return result
+1. Create `app/capabilities/[provider]/[name].rb` inheriting from `BaseCapability`
+2. Define `DEFINITION` with capability name, version, provider, cost
+3. Implement `call(actor_id:, payload:)` — validate, call provider, return result
 4. Register in `config/capabilities.yml`
-5. Add provider cost config to `config/providers.yml`
-6. Add webhook controller under `api/webhooks/` if provider requires one
-7. Add workflow entries to `config/workflows.yml` for any events this capability emits
+5. Add cost config to `config/providers.yml`
+6. Add webhook controller under `api/webhooks/` if the provider requires one
 
-The `log_usage` concern is handled by `BaseCapability` — subclasses never write billing records directly.
+The metering and logging is handled by `BaseCapability` — subclasses never write `CapabilityLog` records directly.
 
 ---
 
 ## Security Model
 
-### Signature Verification
+### Authentication
+
+JWT Bearer on every request except webhooks. Token contains `actor_id`.
+
+### Submission Integrity (Ed25519)
+
+For submission capabilities only — verifies the payload hasn't been tampered with and provides non-repudiation. The actor cannot later deny submitting specific data.
 
 ```ruby
-# Ed25519 — verify every non-auth request
 SignatureVerifier.verify!(
-  signature: envelope[:signature],
-  message:   canonical(envelope[:actor_id], envelope[:timestamp], envelope[:payload]),
-  public_key: actor.public_key
+  signature: params[:signature][:value],
+  public_key: params[:signature][:public_key],
+  message: canonical(params[:capability], params[:payload])
 )
-```
-
-### Replay Protection
-
-```ruby
-# Reject if timestamp outside ±5 minute window
-raise ReplayError if (Time.now.to_i - envelope[:timestamp]).abs > 300
-
-# Reject if signature hash already processed
-raise ReplayError if IdempotencyRecord.exists?(hash: digest(envelope[:signature]))
-```
-
-### Payload Privacy (Mode B)
-
-For capabilities that handle sensitive data (applications, income verification), the browser encrypts the payload before sending. The proxy stores an opaque blob — it never parses sensitive fields.
-
-```
-Browser                          Proxy
-  │                                │
-  │  encrypt(payload, key)         │
-  │  → encrypted_blob              │
-  │ ─────────────────────────────► │
-  │                                │  stores blob only
-  │                                │  never decrypts
-  │ ◄───────────────────────────── │
-  │  { status: "success",          │
-  │    submission_id: "uuid",      │
-  │    metered_cost: 1 }           │
 ```
 
 ### Observability — No PII in Logs
 
 Application logs record only:
-
 ```
 capability_log_id, actor_id, capability, status, total_charged_cents, duration_ms
 ```
 
-Never logged: email addresses, names, phone numbers, application contents, financial account details.
-
----
-
-## How Browser Apps Integrate
-
-1. Register → receive JWT
-2. Store JWT in local SQLite (never a cookie)
-3. For every external API need, build a signed envelope and `POST /api/capability`
-4. Store `capability_log_id` returned in every response in local SQLite for audit trail
-5. Call `GET /api/usage/log` and `GET /api/usage/summary` to populate the cost transparency dashboard
-6. Display `raw_cost_cents`, `markup_cents`, and `total_charged_cents` separately — never collapse them
-
----
-
-## Environment Variables
-
-```bash
-# Rails
-SECRET_KEY_BASE=
-
-# Auth
-JWT_SECRET=
-JWT_EXPIRY_HOURS=720          # 30 days default
-
-# App
-APP_NAME=MyApp                # used in provider Link flows
-
-# Plaid
-PLAID_CLIENT_ID=
-PLAID_SECRET=
-PLAID_ENV=sandbox             # sandbox | development | production
-
-# Stripe (for credit topups)
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-
-# CORS
-FRONTEND_ORIGIN=https://yourapp.pages.dev
-
-# Encryption (access tokens at rest)
-ENCRYPTION_KEY=
-
-# Default markup rate (overridden per provider in config/providers.yml)
-DEFAULT_MARKUP_PERCENT=2
-```
+Never logged: email addresses, names, phone numbers, application contents, financial details.
 
 ---
 
@@ -563,8 +391,6 @@ DEFAULT_MARKUP_PERCENT=2
 
 ```yaml
 # config/providers.yml
-# Base costs are approximate — update when provider pricing changes
-# Markup is what the proxy operator charges on top
 
 providers:
   plaid:
@@ -584,15 +410,60 @@ providers:
       base_cost_cents: 10
       markup_percent: 1
 
-  stripe:
-    charge:
-      base_cost_cents: 0        # Stripe fees deducted from payout, not pre-charged
-      markup_percent: 0.5       # operator takes 0.5% on top of Stripe's 2.9%
-    
   openai:
     chat_completion:
-      base_cost_cents: 0        # variable — read from API response
-      markup_percent: 10        # operator markup on token cost
+      base_cost_cents: 0        # variable — read from API response headers
+      markup_percent: 10
+
+  stripe:
+    charge:
+      base_cost_cents: 0        # Stripe fees deducted from payout
+      markup_percent: 0.5
+```
+
+---
+
+## How Browser Apps Integrate
+
+1. Register → receive JWT
+2. Store JWT in local SQLite (never a cookie)
+3. For every external API need, `POST /api/capability` with capability name and payload
+4. Store `capability_log_id` from every response in local SQLite for audit trail
+5. Call `GET /api/usage/log` and `GET /api/usage/summary` to populate the cost transparency dashboard
+6. Display `raw_cost_cents`, `markup_cents`, and `total_charged_cents` separately — never collapse them
+
+---
+
+## Environment Variables
+
+```bash
+# Rails
+SECRET_KEY_BASE=
+
+# Auth
+JWT_SECRET=
+JWT_EXPIRY_HOURS=720
+
+# App
+APP_NAME=MyApp
+
+# Plaid
+PLAID_CLIENT_ID=
+PLAID_SECRET=
+PLAID_ENV=sandbox
+
+# Stripe
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# CORS
+FRONTEND_ORIGIN=https://yourapp.pages.dev
+
+# Encryption (access tokens at rest)
+ENCRYPTION_KEY=
+
+# Default markup (overridden per provider in config/providers.yml)
+DEFAULT_MARKUP_PERCENT=2
 ```
 
 ---
@@ -617,29 +488,18 @@ bin/rails server
 
 ---
 
-## What Makes This Different from a BFF
-
-A traditional Backend for Frontend couples tightly to one app's data model. This proxy is deliberately **decoupled**:
-
-- No knowledge of the browser app's domain (properties, tenants, invoices, etc.)
-- Entity IDs from the browser app are stored as opaque context in `metadata_json`
-- Any local-first browser app can use this proxy by pointing at it and registering capabilities
-- The capability + workflow model means the proxy stays minimal as integrations grow
-
----
-
 ## Roadmap
 
-- [ ] `BaseCapability` class with shared validate/meter/store/emit lifecycle
+- [ ] `BaseCapability` class with shared validate → meter → store → log lifecycle
 - [ ] `CapabilityDispatcher` — single `POST /api/capability` routing
-- [ ] `EventBus` + `WorkflowEngine` with `config/workflows.yml`
-- [ ] `CreditAccount` model + topup via Stripe
-- [ ] Ed25519 signature verification + replay protection
-- [ ] `config/providers.yml` for operator-configurable cost + markup
+- [ ] Auth endpoints (`POST /api/auth/register`, `POST /api/auth/login`)
+- [ ] Rename `UsageRecord` → `CapabilityLog` with updated fields
+- [ ] `SubmissionRecord` model + Ed25519 signature verification
+- [ ] Plaid capabilities ported from current controller actions
+- [ ] `config/capabilities.yml` registry
 - [ ] Stripe integration capability
 - [ ] OpenAI integration capability
-- [ ] SendGrid / email notification capability
-- [ ] Server-Sent Events for webhook relay to browser
+- [ ] Webhook relay via polling endpoint or Server-Sent Events
 - [ ] Admin dashboard — usage across all actors
-- [ ] Client library for browser apps (JS — wraps envelope signing + fetch)
+- [ ] Client library for browser apps (JS — wraps JWT auth + fetch)
 - [ ] Rate limiting per actor per capability
