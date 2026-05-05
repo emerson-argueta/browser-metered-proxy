@@ -1,8 +1,6 @@
 module Capabilities
   module Sendgrid
     class SendEmail < BaseCapability
-      include Capabilities::Sendgrid::SendgridCapability
-
       DEFINITION = {
         capability: "send_email",
         version: "1.0",
@@ -22,6 +20,10 @@ module Capabilities
       end
 
       private
+
+      def sendgrid_client
+        @sendgrid_client ||= SendGrid::API.new(api_key: ENV.fetch("SENDGRID_API_KEY"))
+      end
 
       def build_mail
         mail = SendGrid::Mail.new
