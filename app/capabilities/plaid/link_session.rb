@@ -10,7 +10,7 @@ module Capabilities
       }.freeze
 
       def call
-        products = (payload[:products] || ["transactions"]).map do |p|
+        products = (payload[:products] || [ "transactions" ]).map do |p|
           ::Plaid::Products.const_get(p.upcase)
         end
 
@@ -18,7 +18,7 @@ module Capabilities
           user: { client_user_id: actor_id },
           client_name: ENV.fetch("APP_NAME", "App"),
           products: products,
-          country_codes: [::Plaid::CountryCode::US],
+          country_codes: [ ::Plaid::CountryCode::US ],
           language: "en"
         )
 
