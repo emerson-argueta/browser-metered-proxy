@@ -384,6 +384,7 @@ DEPENDENCIES
   brakeman
   bundler-audit
   debug
+  ed25519
   image_processing (~> 1.2)
   jwt
   kamal

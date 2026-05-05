@@ -7,3 +7,6 @@ capabilities:
 
   # SendGrid
   send_email: "Capabilities::Sendgrid::SendEmail"
+
+  # Submissions
+  submit_form: "Capabilities::Submissions::SubmitForm"

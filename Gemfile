@@ -44,6 +44,9 @@ gem "sendgrid-ruby"
 # Encryption for Plaid access tokens at rest
 gem "attr_encrypted", "~> 4.0"
 
+# Ed25519 signatures for submission payload integrity
+gem "ed25519"
+
 # JSON Web Tokens for user authentication
 gem "jwt"
 

@@ -6,11 +6,12 @@ class BaseCapability
     cost: { type: "free" }
   }.freeze
 
-  attr_reader :actor_id, :payload
+  attr_reader :actor_id, :payload, :envelope
 
-  def initialize(actor_id:, payload:)
+  def initialize(actor_id:, payload:, envelope: {})
     @actor_id = actor_id
     @payload  = payload
+    @envelope = envelope
   end
 
   def self.capability_name
