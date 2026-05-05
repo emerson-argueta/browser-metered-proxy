@@ -4,24 +4,38 @@ module Api
 
     # POST /api/auth/register
     def register
-      # Placeholder — user storage not yet implemented.
-      # Issue a JWT for the provided actor_id for now.
-      actor_id = params.require(:actor_id)
-      token = JWT.encode({ actor_id: actor_id, exp: expiry }, jwt_secret, "HS256")
-      render json: { token: token }, status: :created
+      actor = Actor.new(
+        email: params.require(:email),
+        password: params.require(:password),
+        password_confirmation: params.require(:password_confirmation)
+      )
+
+      if actor.save
+        render json: { token: issue_token(actor) }, status: :created
+      else
+        render json: { errors: actor.errors.full_messages }, status: :unprocessable_entity
+      end
     end
 
     # POST /api/auth/login
     def login
-      actor_id = params.require(:actor_id)
-      token = JWT.encode({ actor_id: actor_id, exp: expiry }, jwt_secret, "HS256")
-      render json: { token: token }
+      actor = Actor.find_by(email: params.require(:email)&.downcase)
+
+      if actor&.authenticate(params.require(:password))
+        render json: { token: issue_token(actor) }
+      else
+        render json: { error: "Invalid email or password" }, status: :unauthorized
+      end
     end
 
     private
 
-    def expiry
-      ENV.fetch("JWT_EXPIRY_HOURS", "720").to_i.hours.from_now.to_i
+    def issue_token(actor)
+      payload = {
+        actor_id: actor.id.to_s,
+        exp: ENV.fetch("JWT_EXPIRY_HOURS", "720").to_i.hours.from_now.to_i
+      }
+      JWT.encode(payload, jwt_secret, "HS256")
     end
   end
 end

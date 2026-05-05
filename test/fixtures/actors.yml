@@ -1,0 +1,4 @@
+# passwords are hashed with BCrypt — use Actor.new(password: "...").password_digest to generate
+one:
+  email: actor1@example.com
+  password_digest: <%= BCrypt::Password.create("password") %>
