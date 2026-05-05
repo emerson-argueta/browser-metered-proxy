@@ -80,7 +80,39 @@ Plaid is included as a reference implementation. It demonstrates the full capabi
 | `initiate_transfer` | passthrough | ACH transfer |
 | `transfer_status` | free | Check transfer status |
 
-To add Stripe, OpenAI, or any other provider: follow the same pattern in `app/capabilities/[provider]/`. The Plaid capabilities are the example — delete them if you don't need Plaid.
+### SendGrid — email notifications
+
+| Capability | Cost type | Description |
+|---|---|---|
+| `send_email` | fixed | Send a transactional email or dynamic template |
+
+Supports plain HTML body or SendGrid dynamic templates via `template_id` + `template_data`. The browser app decides when to send — the proxy just holds the API key and fires the call.
+
+```json
+{
+  "capability": "send_email",
+  "payload": {
+    "to": "applicant@example.com",
+    "subject": "Your application was accepted",
+    "body": "<p>Congratulations...</p>"
+  }
+}
+```
+
+Or with a SendGrid dynamic template:
+
+```json
+{
+  "capability": "send_email",
+  "payload": {
+    "to": "applicant@example.com",
+    "template_id": "d-abc123",
+    "template_data": { "first_name": "Jane", "property": "123 Oak St" }
+  }
+}
+```
+
+To add Stripe, OpenAI, or any other provider: follow the same pattern in `app/capabilities/[provider]/`.
 
 ## Setup
 

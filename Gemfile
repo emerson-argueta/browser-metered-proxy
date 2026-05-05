@@ -38,6 +38,9 @@ gem "rack-cors"
 # Plaid Ruby SDK for bank account linking and ACH payments
 gem "plaid"
 
+# SendGrid for transactional email
+gem "sendgrid-ruby"
+
 # Encryption for Plaid access tokens at rest
 gem "attr_encrypted", "~> 4.0"
 

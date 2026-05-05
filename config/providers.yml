@@ -25,3 +25,8 @@ providers:
     charge:
       base_cost_cents: 0
       markup_percent: 0.5
+
+  sendgrid:
+    send_email:
+      base_cost_cents: 1
+      markup_percent: 0

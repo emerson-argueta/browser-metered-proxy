@@ -4,3 +4,6 @@ capabilities:
   verify_income:   "Capabilities::Plaid::VerifyIncome"
   initiate_transfer: "Capabilities::Plaid::InitiateTransfer"
   transfer_status:   "Capabilities::Plaid::TransferStatus"
+
+  # SendGrid
+  send_email: "Capabilities::Sendgrid::SendEmail"
