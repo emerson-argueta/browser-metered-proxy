@@ -35,6 +35,9 @@ gem "image_processing", "~> 1.2"
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem "rack-cors"
 
+# Rate limiting
+gem "rack-attack"
+
 # Plaid Ruby SDK for bank account linking and ACH payments
 gem "plaid"
 

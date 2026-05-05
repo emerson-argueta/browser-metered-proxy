@@ -11,7 +11,7 @@ The core promise: every proxied call is logged with `raw_cost_cents`, `markup_ce
 ```
 Browser App
   │  Authorization: Bearer <jwt>
-  │  POST /api/capability { capability, payload }
+  │  POST /api/capability { capability, payload, signature? }
   ▼
 browser-metered-proxy
   ├── Validates JWT → identifies actor
@@ -59,7 +59,6 @@ Response always includes cost fields:
 
 ```json
 {
-  "capability_log_id": 42,
   "status": "success",
   "raw_cost_cents": 150,
   "markup_cents": 3,
@@ -111,6 +110,43 @@ Or with a SendGrid dynamic template:
   }
 }
 ```
+
+### Form submissions — signed payload storage
+
+| Capability | Cost type | Description |
+|---|---|---|
+| `submit_form` | free | Store a form submission with optional Ed25519 signature |
+
+For sensitive submissions where you need a tamper-proof audit trail (e.g. a rental application, a contract acceptance), the browser can sign the payload before sending. The proxy verifies the signature and stores it alongside the submission — giving you cryptographic proof of exactly what was submitted.
+
+**Without signature** (basic storage):
+```json
+{
+  "capability": "submit_form",
+  "payload": {
+    "data": { "name": "Jane Doe", "income": 75000 },
+    "idempotency_key": "application_123"
+  }
+}
+```
+
+**With Ed25519 signature** (tamper-proof):
+```json
+{
+  "capability": "submit_form",
+  "payload": {
+    "data": { "name": "Jane Doe", "income": 75000 },
+    "idempotency_key": "application_123"
+  },
+  "signature": {
+    "algorithm": "ed25519",
+    "public_key": "<base64-encoded public key>",
+    "value": "<base64-encoded signature>"
+  }
+}
+```
+
+The signature covers the canonical form of `capability + payload`, so neither can be altered after signing. `idempotency_key` prevents duplicate submissions — a second request with the same key returns the original record.
 
 To add Stripe, OpenAI, or any other provider: follow the same pattern in `app/capabilities/[provider]/`.
 
