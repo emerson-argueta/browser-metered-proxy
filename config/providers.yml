@@ -1,13 +1,19 @@
 providers:
   plaid:
+    # Pricing last verified: 2026-05-07
+    # Transactions product: $0.30/connected account/month
+    # Amortized assuming ~5 syncs/month (get_accounts + sync_transactions per sync = 10 calls/month)
     link_session:
-      base_cost_cents: 50
-      markup_percent: 2
+      base_cost_cents: 0      # Plaid does not charge for Link token generation
+      markup_percent: 0
+    exchange_token:
+      base_cost_cents: 0      # Plaid does not charge for public token exchange
+      markup_percent: 0
     get_accounts:
-      base_cost_cents: 10
+      base_cost_cents: 3      # $0.30/month ÷ 10 calls
       markup_percent: 1
     sync_transactions:
-      base_cost_cents: 10
+      base_cost_cents: 3      # $0.30/month ÷ 10 calls
       markup_percent: 1
     verify_income:
       base_cost_cents: 150
