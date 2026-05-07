@@ -8,8 +8,8 @@ module Billing
     }.freeze
 
     def call
-      limit  = [[Integer(payload[:limit] || 50), 1].max, 200].min
-      offset = [Integer(payload[:offset] || 0), 0].max
+      limit  = [ [ Integer(payload[:limit] || 50), 1 ].max, 200 ].min
+      offset = [ Integer(payload[:offset] || 0), 0 ].max
 
       logs = CapabilityLog
         .where(actor_id: actor_id)
