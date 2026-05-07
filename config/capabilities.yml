@@ -1,10 +1,17 @@
 capabilities:
+  # Billing
+  get_balance:        "Billing::GetBalance"
+  add_credits:        "Billing::AddCredits"
+  get_usage_logs:     "Billing::GetUsageLogs"
+
   # Plaid
-  link_session:      "Plaid::LinkSession"
-  exchange_token:    "Plaid::ExchangeToken"
-  verify_income:     "Plaid::VerifyIncome"
-  initiate_transfer: "Plaid::InitiateTransfer"
-  transfer_status:   "Plaid::TransferStatus"
+  link_session:       "Plaid::LinkSession"
+  exchange_token:     "Plaid::ExchangeToken"
+  get_accounts:       "Plaid::GetAccounts"
+  sync_transactions:  "Plaid::SyncTransactions"
+  verify_income:      "Plaid::VerifyIncome"
+  initiate_transfer:  "Plaid::InitiateTransfer"
+  transfer_status:    "Plaid::TransferStatus"
 
   # SendGrid
   send_email: "Sendgrid::SendEmail"

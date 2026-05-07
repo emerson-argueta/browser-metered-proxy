@@ -1,6 +1,6 @@
 class ExternalItem < ApplicationRecord
   attr_encrypted :access_token,
-    key: -> { ENV.fetch("ENCRYPTION_KEY")[0, 32] },
+    key: ->(_) { ENV.fetch("ENCRYPTION_KEY")[0, 32] },
     attribute: "access_token_encrypted"
 
   validates :actor_id, presence: true

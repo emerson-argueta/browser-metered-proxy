@@ -3,6 +3,12 @@ providers:
     link_session:
       base_cost_cents: 50
       markup_percent: 2
+    get_accounts:
+      base_cost_cents: 10
+      markup_percent: 1
+    sync_transactions:
+      base_cost_cents: 10
+      markup_percent: 1
     verify_income:
       base_cost_cents: 150
       markup_percent: 2
