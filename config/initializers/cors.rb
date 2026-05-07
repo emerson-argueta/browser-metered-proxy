@@ -1,7 +1,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     # In production, restrict to your actual frontend domain
-    origins ENV.fetch("FRONTEND_ORIGIN", "*")
+    origins *ENV.fetch("FRONTEND_ORIGIN", "*").split(",")
 
     resource "/api/*",
       headers: :any,
