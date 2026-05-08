@@ -13,8 +13,8 @@ Rails.application.routes.draw do
 
     # Webhooks (no auth — validated by provider signature)
     namespace :webhooks do
-      post "plaid",     to: "plaid#receive"
-      post ":provider", to: "generic#receive"
+      post "plaid",   to: "plaid#receive"
+      post "stripe",  to: "stripe#receive"
     end
   end
 

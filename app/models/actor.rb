@@ -28,5 +28,13 @@ class Actor < ApplicationRecord
     increment!(:balance_cents, amount_cents)
   end
 
+  def stripe_customer?
+    payment_provider == "stripe" && payment_customer_id.present?
+  end
+
+  def attach_stripe_customer!(customer_id)
+    update!(payment_customer_id: customer_id, payment_provider: "stripe")
+  end
+
   class InsufficientBalanceError < StandardError; end
 end

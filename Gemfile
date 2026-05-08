@@ -41,6 +41,9 @@ gem "rack-attack"
 # Plaid Ruby SDK for bank account linking and ACH payments
 gem "plaid"
 
+# Stripe for payment processing
+gem "stripe"
+
 # SendGrid for transactional email
 gem "sendgrid-ruby"
 

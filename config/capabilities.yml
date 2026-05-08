@@ -1,8 +1,13 @@
 capabilities:
   # Billing
-  get_balance:        "Billing::GetBalance"
-  add_credits:        "Billing::AddCredits"
-  get_usage_logs:     "Billing::GetUsageLogs"
+  get_balance:                  "Billing::GetBalance"
+  add_credits:                  "Billing::AddCredits"
+  get_usage_logs:               "Billing::GetUsageLogs"
+
+  # Stripe payments
+  create_payment_intent:        "StripeCapability::CreatePaymentIntent"
+  create_payment_intent_saved:  "StripeCapability::CreatePaymentIntentSaved"
+  get_payment_methods:          "StripeCapability::GetPaymentMethods"
 
   # Plaid
   link_session:       "Plaid::LinkSession"
