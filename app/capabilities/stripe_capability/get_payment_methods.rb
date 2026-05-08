@@ -11,7 +11,14 @@ module StripeCapability
 
     def call
       actor = Actor.find(actor_id)
-      return { payment_methods: [], has_saved_method: false } unless actor.stripe_customer?
+      unless actor.stripe_customer?
+        return {
+          payment_methods:     [],
+          has_saved_method:    false,
+          publishable_key:     ENV["STRIPE_PUBLISHABLE_KEY"].presence,
+          provider_request_id: nil
+        }
+      end
 
       customer = Stripe::Customer.retrieve(
         actor.payment_customer_id,
@@ -37,8 +44,9 @@ module StripeCapability
       end
 
       {
-        payment_methods:   methods,
-        has_saved_method:  methods.any?,
+        payment_methods:     methods,
+        has_saved_method:    methods.any?,
+        publishable_key:     stripe_publishable_key,
         provider_request_id: nil
       }
     end
