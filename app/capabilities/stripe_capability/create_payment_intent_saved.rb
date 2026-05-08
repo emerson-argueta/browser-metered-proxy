@@ -17,12 +17,12 @@ module StripeCapability
       raise ArgumentError, "No saved payment method" unless actor.stripe_customer?
 
       # Retrieve default payment method for the customer
-      customer = Stripe::Customer.retrieve(
-        actor.payment_customer_id,
+      customer = Stripe::Customer.retrieve({
+        id:     actor.payment_customer_id,
         expand: [ "default_source", "invoice_settings.default_payment_method" ]
-      )
-      pm_id = customer.dig("invoice_settings", "default_payment_method", "id") ||
-              customer.dig("invoice_settings", "default_payment_method") ||
+      })
+      default_pm = customer.invoice_settings&.default_payment_method
+      pm_id = (default_pm.respond_to?(:id) ? default_pm.id : default_pm) ||
               customer.default_source
 
       raise ArgumentError, "No default payment method on file" unless pm_id

@@ -20,12 +20,12 @@ module StripeCapability
         }
       end
 
-      customer = Stripe::Customer.retrieve(
-        actor.payment_customer_id,
+      customer = Stripe::Customer.retrieve({
+        id:     actor.payment_customer_id,
         expand: [ "invoice_settings.default_payment_method" ]
-      )
-      default_pm_id = customer.dig("invoice_settings", "default_payment_method", "id") ||
-                      customer.dig("invoice_settings", "default_payment_method")
+      })
+      default_pm = customer.invoice_settings&.default_payment_method
+      default_pm_id = default_pm.respond_to?(:id) ? default_pm.id : default_pm
 
       pms = Stripe::PaymentMethod.list(
         customer: actor.payment_customer_id,
