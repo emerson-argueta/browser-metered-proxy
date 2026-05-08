@@ -18,7 +18,8 @@ module Billing
       if ENV["REQUIRE_PAYMENT"] == "true"
         payment_intent_id = payload.fetch(:payment_intent_id)
         raise ArgumentError, "Already credited for this payment" if already_credited?(payment_intent_id)
-        verify_payment_intent!(payment_intent_id, amount_cents)
+        pi = verify_payment_intent!(payment_intent_id, amount_cents)
+        set_default_payment_method(actor, pi)
       end
 
       actor.credit!(amount_cents)

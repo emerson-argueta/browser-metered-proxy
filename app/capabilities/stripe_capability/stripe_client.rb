@@ -30,5 +30,19 @@ module StripeCapability
         provider_request_id: payment_intent_id
       )
     end
+
+    def set_default_payment_method(actor, pi)
+      return unless actor.stripe_customer?
+      pm_id = pi.payment_method
+      return unless pm_id
+      Stripe::Customer.update(actor.payment_customer_id, {
+        invoice_settings: { default_payment_method: pm_id }
+      })
+    end
+
+    def first_payment_method(customer_id)
+      pms = Stripe::PaymentMethod.list(customer: customer_id, type: "card")
+      pms.data.first&.id
+    end
   end
 end
