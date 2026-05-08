@@ -11,14 +11,15 @@ module Billing
       limit  = [ [ Integer(payload[:limit] || 50), 1 ].max, 200 ].min
       offset = [ Integer(payload[:offset] || 0), 0 ].max
 
-      logs = CapabilityLog
-        .where(actor_id: actor_id)
+      paid = CapabilityLog.where(actor_id: actor_id).where("total_charged_cents > 0")
+
+      logs = paid
         .order(invoked_at: :desc)
         .limit(limit)
         .offset(offset)
 
-      total_charged = CapabilityLog.where(actor_id: actor_id).sum(:total_charged_cents)
-      total_calls   = CapabilityLog.where(actor_id: actor_id).count
+      total_charged = paid.sum(:total_charged_cents)
+      total_calls   = paid.count
 
       {
         logs: logs.map { |l|
