@@ -1,7 +1,7 @@
 module Api
   module Webhooks
     class StripeController < ApplicationController
-      skip_before_action :authenticate_request
+      skip_before_action :authenticate_actor!
 
       def receive
         payload = request.body.read
