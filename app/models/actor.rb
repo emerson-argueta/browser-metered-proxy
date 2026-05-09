@@ -28,6 +28,22 @@ class Actor < ApplicationRecord
     increment!(:balance_cents, amount_cents)
   end
 
+  def generate_password_reset_token!
+    update!(
+      password_reset_token:    SecureRandom.urlsafe_base64(32),
+      password_reset_sent_at:  Time.current
+    )
+    password_reset_token
+  end
+
+  def password_reset_expired?
+    password_reset_sent_at.nil? || password_reset_sent_at < 2.hours.ago
+  end
+
+  def clear_password_reset!
+    update!(password_reset_token: nil, password_reset_sent_at: nil)
+  end
+
   def stripe_customer?
     payment_provider == "stripe" && payment_customer_id.present?
   end

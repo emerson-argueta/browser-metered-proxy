@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   namespace :api do
     # Auth
-    post "auth/register", to: "auth#register"
-    post "auth/login",    to: "auth#login"
+    post "auth/register",       to: "auth#register"
+    post "auth/login",          to: "auth#login"
+    post "auth/forgot_password", to: "auth#forgot_password"
+    post "auth/reset_password",  to: "auth#reset_password"
 
     # Single capability dispatch
     post "capability", to: "capability#invoke"

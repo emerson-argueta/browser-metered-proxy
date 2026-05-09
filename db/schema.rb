@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_08_171817) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_09_140856) do
   create_table "actors", force: :cascade do |t|
     t.integer "balance_cents", default: 0, null: false
     t.datetime "created_at", null: false
     t.string "email", null: false
     t.string "password_digest", null: false
+    t.datetime "password_reset_sent_at"
+    t.string "password_reset_token"
     t.string "payment_customer_id"
     t.string "payment_provider"
     t.datetime "updated_at", null: false

@@ -28,6 +28,39 @@ module Api
       end
     end
 
+    # POST /api/auth/forgot_password
+    def forgot_password
+      actor = Actor.find_by(email: params.require(:email).downcase)
+
+      if actor
+        token = actor.generate_password_reset_token!
+        reset_url = "#{params.require(:reset_base_url)}?token=#{token}"
+        send_reset_email(actor, reset_url)
+      end
+
+      # Always respond the same way to avoid email enumeration
+      render json: { message: "If that email exists you will receive a reset link shortly." }
+    end
+
+    # POST /api/auth/reset_password
+    def reset_password
+      actor = Actor.find_by(password_reset_token: params.require(:token))
+
+      if actor.nil? || actor.password_reset_expired?
+        return render json: { error: "Reset link is invalid or has expired." }, status: :unprocessable_entity
+      end
+
+      if actor.update(
+        password: params.require(:password),
+        password_confirmation: params.require(:password_confirmation)
+      )
+        actor.clear_password_reset!
+        render json: { token: issue_token(actor) }
+      else
+        render json: { errors: actor.errors.full_messages }, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def issue_token(actor)
@@ -36,6 +69,35 @@ module Api
         exp: ENV.fetch("JWT_EXPIRY_HOURS", "720").to_i.hours.from_now.to_i
       }
       JWT.encode(payload, jwt_secret, "HS256")
+    end
+
+    def send_reset_email(actor, reset_url)
+      return unless ENV["SENDGRID_API_KEY"].present?
+
+      sg = SendGrid::API.new(api_key: ENV["SENDGRID_API_KEY"])
+      mail = SendGrid::Mail.new
+      mail.from = SendGrid::Email.new(
+        email: ENV.fetch("SENDGRID_FROM_EMAIL", "noreply@example.com"),
+        name:  ENV.fetch("SENDGRID_FROM_NAME", ENV.fetch("APP_NAME", "App"))
+      )
+      mail.subject = "Reset your #{ENV.fetch("APP_NAME", "App")} password"
+
+      personalization = SendGrid::Personalization.new
+      personalization.add_to(SendGrid::Email.new(email: actor.email))
+      mail.add_personalization(personalization)
+      mail.add_content(SendGrid::Content.new(
+        type:  "text/html",
+        value: <<~HTML
+          <p>Hi,</p>
+          <p>Click the link below to reset your password. This link expires in 2 hours.</p>
+          <p><a href="#{reset_url}">Reset Password</a></p>
+          <p>If you didn't request this, you can ignore this email.</p>
+        HTML
+      ))
+
+      sg.client.mail._("send").post(request_body: mail.to_json)
+    rescue => e
+      Rails.logger.error "[auth] password reset email failed: #{e.message}"
     end
   end
 end
