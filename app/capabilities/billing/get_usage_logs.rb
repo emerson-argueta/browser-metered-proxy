@@ -26,6 +26,8 @@ module Billing
           {
             capability:          l.capability,
             provider:            l.provider,
+            raw_cost_cents:      l.raw_cost_cents,
+            markup_cents:        l.markup_cents,
             total_charged_cents: l.total_charged_cents,
             status:              l.status,
             invoked_at:          l.invoked_at&.iso8601

@@ -6910,3 +6910,448 @@ Processing by Api::CapabilityController#invoke as */*
 Completed 200 OK in 523ms (Views: 0.4ms | ActiveRecord: 2.3ms (1 query, 0 cached) | GC: 0.0ms)
 
 
+Started POST "/api/auth/login" for ::1 at 2026-05-13 06:38:31 -0700
+Processing by Api::AuthController#login as */*
+  Parameters: {"email"=>"[FILTERED]", "password"=>"[FILTERED]", "auth"=>{"email"=>"[FILTERED]", "password"=>"[FILTERED]"}}
+  [1m[36mActor Load (0.7ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."email" = 'emersonargueta92@gmail.com' LIMIT 1 /*action='login',application='RentflowBackend',controller='auth'*/[0m
+  ↳ app/controllers/api/auth_controller.rb:22:in `login'
+Completed 200 OK in 185ms (Views: 0.1ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 2.3ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:38:37 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"link_session", "payload"=>{"products"=>["transactions"]}}
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.8ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'link_session', '1.0', 'plaid', '35e37bcf512c0b6', 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:38:37.380332', '2026-05-13 13:38:37.852597', '2026-05-13 13:38:37.863961', '2026-05-13 13:38:37.863961') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 493ms (Views: 0.3ms | ActiveRecord: 2.6ms (1 query, 0 cached) | GC: 5.9ms)
+
+
+Started GET "/api/capability/quote?capability=sync_transactions" for ::1 at 2026-05-13 06:38:43 -0700
+Processing by Api::CapabilityController#quote as */*
+  Parameters: {"capability"=>"sync_transactions"}
+Completed 200 OK in 3ms (Views: 0.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/capability/quote?capability=sync_transactions" for ::1 at 2026-05-13 06:38:55 -0700
+Processing by Api::CapabilityController#quote as */*
+  Parameters: {"capability"=>"sync_transactions"}
+Completed 200 OK in 2ms (Views: 0.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+[dotenv] Set [36mSECRET_KEY_BASE[0m, [36mJWT_SECRET[0m, [36mJWT_EXPIRY_HOURS[0m, [36mAPP_NAME[0m, [36mPLAID_CLIENT_ID[0m, [36mPLAID_SECRET[0m, [36mPLAID_ENV[0m, [36mSTRIPE_SECRET_KEY[0m, [36mSTRIPE_PUBLISHABLE_KEY[0m, [36mSTRIPE_WEBHOOK_SECRET[0m, [36mREQUIRE_PAYMENT[0m, [36mSENDGRID_API_KEY[0m, [36mSENDGRID_FROM_EMAIL[0m, [36mSENDGRID_FROM_NAME[0m, [36mFRONTEND_ORIGIN[0m, [36mENCRYPTION_KEY[0m, [36mDEFAULT_MARKUP_PERCENT[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
+Started GET "/api/capability/quote?capability=sync_transactions" for ::1 at 2026-05-13 06:43:00 -0700
+Processing by Api::CapabilityController#quote as */*
+  Parameters: {"capability"=>"sync_transactions"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/capability/quote?capability=sync_transactions" for ::1 at 2026-05-13 06:43:51 -0700
+Processing by Api::CapabilityController#quote as */*
+  Parameters: {"capability"=>"sync_transactions"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:43:52 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"sync_transactions", "payload"=>{"external_id"=>"1qPyLxyp9BsLJdKAkwPniDPwbxg8myHbAKr1j", "cursor"=>"CAESJU5WbmQ0WmR6MXd0cTM3SnBFOWdySXhLZ3hRTDFSUEYzZHZ3ZUoaCwi1o4LQBhCopLErIgsItaOC0AYQqKSxKyoLCLWjgtAGEKiksSs="}}
+  [1m[36mActor Load (0.3ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:36:in `execute'
+  [1m[36mExternalItem Load (0.2ms)[0m  [1m[34mSELECT "external_items".* FROM "external_items" WHERE "external_items"."actor_id" = '1' AND "external_items"."external_id" = '1qPyLxyp9BsLJdKAkwPniDPwbxg8myHbAKr1j' AND "external_items"."provider" = 'plaid' LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/plaid/plaid_client.rb:20:in `external_item_for'
+  [1m[36mCACHE Actor Load (0.0ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1[0m
+  ↳ app/capabilities/base_capability.rb:46:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Load (2.4ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1  /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Update All (0.2ms)[0m  [1m[33mUPDATE "actors" SET "balance_cents" = COALESCE("actors"."balance_cents", 0) - 4 WHERE "actors"."id" = 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:23:in `block in deduct!'
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.5ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'sync_transactions', '1.0', 'plaid', '627aa5687db60e6', 3, 1, 4, 'actor', NULL, 'success', NULL, '2026-05-13 13:43:52.205798', '2026-05-13 13:43:53.366639', '2026-05-13 13:43:53.367618', '2026-05-13 13:43:53.367618') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 1169ms (Views: 0.3ms | ActiveRecord: 5.7ms (6 queries, 1 cached) | GC: 0.7ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:43:53 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_accounts", "payload"=>{"external_id"=>"1qPyLxyp9BsLJdKAkwPniDPwbxg8myHbAKr1j"}}
+  [1m[36mActor Load (0.3ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:36:in `execute'
+  [1m[36mExternalItem Load (0.1ms)[0m  [1m[34mSELECT "external_items".* FROM "external_items" WHERE "external_items"."actor_id" = '1' AND "external_items"."external_id" = '1qPyLxyp9BsLJdKAkwPniDPwbxg8myHbAKr1j' AND "external_items"."provider" = 'plaid' LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/plaid/plaid_client.rb:20:in `external_item_for'
+  [1m[36mCACHE Actor Load (0.0ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1[0m
+  ↳ app/capabilities/base_capability.rb:46:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Load (2.2ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1  /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Update All (0.2ms)[0m  [1m[33mUPDATE "actors" SET "balance_cents" = COALESCE("actors"."balance_cents", 0) - 4 WHERE "actors"."id" = 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:23:in `block in deduct!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.9ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_accounts', '1.0', 'plaid', '2d7b10e45e6d091', 3, 1, 4, 'actor', NULL, 'success', NULL, '2026-05-13 13:43:53.390082', '2026-05-13 13:43:53.980501', '2026-05-13 13:43:53.981439', '2026-05-13 13:43:53.981439') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 600ms (Views: 0.3ms | ActiveRecord: 5.6ms (6 queries, 1 cached) | GC: 0.5ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:43:54 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"sync_transactions", "payload"=>{"external_id"=>"jDAzb8yQXYFkM3059jojIyEn35ejLMsZbL4oz", "cursor"=>"CAESJm5CWFliYXZRNkxJMDVCVjNlQWJBaDRNbXlQSnFndklYSzRLbWVNGgsIgKeC0AYQuMvQJSILCICngtAGELjL0CUqCwiAp4LQBhC4y9Al"}}
+  [1m[36mActor Load (0.4ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:36:in `execute'
+  [1m[36mExternalItem Load (0.2ms)[0m  [1m[34mSELECT "external_items".* FROM "external_items" WHERE "external_items"."actor_id" = '1' AND "external_items"."external_id" = 'jDAzb8yQXYFkM3059jojIyEn35ejLMsZbL4oz' AND "external_items"."provider" = 'plaid' LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/plaid/plaid_client.rb:20:in `external_item_for'
+  [1m[36mCACHE Actor Load (0.1ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1[0m
+  ↳ app/capabilities/base_capability.rb:46:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Load (3.0ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1  /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Update All (0.6ms)[0m  [1m[33mUPDATE "actors" SET "balance_cents" = COALESCE("actors"."balance_cents", 0) - 4 WHERE "actors"."id" = 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:23:in `block in deduct!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.8ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'sync_transactions', '1.0', 'plaid', '6b84283eedf8858', 3, 1, 4, 'actor', NULL, 'success', NULL, '2026-05-13 13:43:54.036284', '2026-05-13 13:43:54.803800', '2026-05-13 13:43:54.804974', '2026-05-13 13:43:54.804974') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 784ms (Views: 0.1ms | ActiveRecord: 6.6ms (6 queries, 1 cached) | GC: 6.1ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:43:54 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_accounts", "payload"=>{"external_id"=>"jDAzb8yQXYFkM3059jojIyEn35ejLMsZbL4oz"}}
+  [1m[36mActor Load (0.2ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:36:in `execute'
+  [1m[36mExternalItem Load (0.1ms)[0m  [1m[34mSELECT "external_items".* FROM "external_items" WHERE "external_items"."actor_id" = '1' AND "external_items"."external_id" = 'jDAzb8yQXYFkM3059jojIyEn35ejLMsZbL4oz' AND "external_items"."provider" = 'plaid' LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/plaid/plaid_client.rb:20:in `external_item_for'
+  [1m[36mCACHE Actor Load (0.0ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1[0m
+  ↳ app/capabilities/base_capability.rb:46:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Load (1.9ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1  /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Update All (0.2ms)[0m  [1m[33mUPDATE "actors" SET "balance_cents" = COALESCE("actors"."balance_cents", 0) - 4 WHERE "actors"."id" = 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:23:in `block in deduct!'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.2ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_accounts', '1.0', 'plaid', '07ca63f7ef67f15', 3, 1, 4, 'actor', NULL, 'success', NULL, '2026-05-13 13:43:54.828375', '2026-05-13 13:43:55.378548', '2026-05-13 13:43:55.379451', '2026-05-13 13:43:55.379451') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 558ms (Views: 0.4ms | ActiveRecord: 4.5ms (6 queries, 1 cached) | GC: 0.0ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:43:55 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"sync_transactions", "payload"=>{"external_id"=>"94vYR1Ej51SoddeR0ra1Uyo5PVvL5qFX4X9B4", "cursor"=>"CAESJWQ4UGtRMG9acDBTRVJSNWFlVkQ0SWp6Z3lZYjhZTmNLcHk5eDgaDAiBq4jQBhD4teLMAiIMCIGriNAGEPi14swCKgwIgauI0AYQ+LXizAI="}}
+  [1m[36mActor Load (0.5ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:36:in `execute'
+  [1m[36mExternalItem Load (0.2ms)[0m  [1m[34mSELECT "external_items".* FROM "external_items" WHERE "external_items"."actor_id" = '1' AND "external_items"."external_id" = '94vYR1Ej51SoddeR0ra1Uyo5PVvL5qFX4X9B4' AND "external_items"."provider" = 'plaid' LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/plaid/plaid_client.rb:20:in `external_item_for'
+  [1m[36mCACHE Actor Load (0.0ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1[0m
+  ↳ app/capabilities/base_capability.rb:46:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Load (1.8ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1  /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Update All (0.2ms)[0m  [1m[33mUPDATE "actors" SET "balance_cents" = COALESCE("actors"."balance_cents", 0) - 4 WHERE "actors"."id" = 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:23:in `block in deduct!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.7ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'sync_transactions', '1.0', 'plaid', 'bbb71b565f73ea1', 3, 1, 4, 'actor', NULL, 'success', NULL, '2026-05-13 13:43:55.442285', '2026-05-13 13:43:56.232431', '2026-05-13 13:43:56.233378', '2026-05-13 13:43:56.233378') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 797ms (Views: 0.3ms | ActiveRecord: 5.1ms (6 queries, 1 cached) | GC: 0.0ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:43:56 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_accounts", "payload"=>{"external_id"=>"94vYR1Ej51SoddeR0ra1Uyo5PVvL5qFX4X9B4"}}
+  [1m[36mActor Load (0.4ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:36:in `execute'
+  [1m[36mExternalItem Load (0.2ms)[0m  [1m[34mSELECT "external_items".* FROM "external_items" WHERE "external_items"."actor_id" = '1' AND "external_items"."external_id" = '94vYR1Ej51SoddeR0ra1Uyo5PVvL5qFX4X9B4' AND "external_items"."provider" = 'plaid' LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/plaid/plaid_client.rb:20:in `external_item_for'
+  [1m[36mCACHE Actor Load (0.0ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1[0m
+  ↳ app/capabilities/base_capability.rb:46:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Load (1.9ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1  /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mActor Update All (0.2ms)[0m  [1m[33mUPDATE "actors" SET "balance_cents" = COALESCE("actors"."balance_cents", 0) - 4 WHERE "actors"."id" = 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:23:in `block in deduct!'
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/models/actor.rb:21:in `deduct!'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (2.4ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_accounts', '1.0', 'plaid', '0505950149ef0d0', 3, 1, 4, 'actor', NULL, 'success', NULL, '2026-05-13 13:43:56.255228', '2026-05-13 13:43:56.849216', '2026-05-13 13:43:56.850081', '2026-05-13 13:43:56.850081') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 601ms (Views: 0.4ms | ActiveRecord: 6.0ms (6 queries, 1 cached) | GC: 0.0ms)
+
+
+Started GET "/api/capability/quote?capability=sync_transactions" for ::1 at 2026-05-13 06:44:27 -0700
+Processing by Api::CapabilityController#quote as */*
+  Parameters: {"capability"=>"sync_transactions"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:44:30 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:44:30 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:44:30 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_payment_methods", "payload"=>{}}
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_usage_logs", "payload"=>{"limit"=>50}}
+  [1m[36mCapabilityLog Sum (0.2ms)[0m  [1m[34mSELECT SUM("capability_logs"."total_charged_cents") FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_usage_logs.rb:21:in `call'
+Processing by Api::CapabilityController#invoke as */*
+  [1m[36mCapabilityLog Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  Parameters: {"capability"=>"get_balance", "payload"=>{}}
+  ↳ app/capabilities/billing/get_usage_logs.rb:22:in `call'
+  [1m[36mActor Load (0.5ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mCapabilityLog Load (0.8ms)[0m  [1m[34mSELECT "capability_logs".* FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) ORDER BY "capability_logs"."invoked_at" DESC LIMIT 50 OFFSET 0 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_balance.rb:11:in `call'
+  ↳ app/capabilities/billing/get_usage_logs.rb:25:in `map'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.9ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_balance', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:44:30.216500', '2026-05-13 13:44:30.219480', '2026-05-13 13:44:30.219688', '2026-05-13 13:44:30.219688') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mTRANSACTION (1.7ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 9ms (Views: 0.1ms | ActiveRecord: 2.6ms (2 queries, 0 cached) | GC: 0.5ms)
+
+
+  [1m[36mCapabilityLog Create (4.2ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_usage_logs', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:44:30.212917', '2026-05-13 13:44:30.220808', '2026-05-13 13:44:30.220916', '2026-05-13 13:44:30.220916') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 15ms (Views: 0.1ms | ActiveRecord: 7.1ms (4 queries, 0 cached) | GC: 0.9ms)
+
+
+  [1m[36mActor Load (0.1ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/stripe_capability/get_payment_methods.rb:13:in `call'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.7ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_payment_methods', '1.0', 'stripe', NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:44:30.231565', '2026-05-13 13:44:31.151848', '2026-05-13 13:44:31.152736', '2026-05-13 13:44:31.152736') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 964ms (Views: 0.3ms | ActiveRecord: 2.2ms (2 queries, 0 cached) | GC: 16.8ms)
+
+
+Started GET "/api/capability/quote?capability=sync_transactions" for ::1 at 2026-05-13 06:45:04 -0700
+Processing by Api::CapabilityController#quote as */*
+  Parameters: {"capability"=>"sync_transactions"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:26 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:26 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:26 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_balance", "payload"=>{}}
+  [1m[36mActor Load (0.2ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_balance.rb:11:in `call'
+Processing by Api::CapabilityController#invoke as */*
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  Parameters: {"capability"=>"get_payment_methods", "payload"=>{}}
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mActor Load (0.1ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mCapabilityLog Create (2.0ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_balance', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:26.499869', '2026-05-13 13:46:26.501657', '2026-05-13 13:46:26.502136', '2026-05-13 13:46:26.502136') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/stripe_capability/get_payment_methods.rb:13:in `call'
+Processing by Api::CapabilityController#invoke as */*
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  Parameters: {"capability"=>"get_usage_logs", "payload"=>{"limit"=>50}}
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mCapabilityLog Sum (0.4ms)[0m  [1m[34mSELECT SUM("capability_logs"."total_charged_cents") FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  ↳ app/capabilities/billing/get_usage_logs.rb:21:in `call'
+Completed 200 OK in 12ms (Views: 0.1ms | ActiveRecord: 2.4ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mCapabilityLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_usage_logs.rb:22:in `call'
+  [1m[36mCapabilityLog Load (0.5ms)[0m  [1m[34mSELECT "capability_logs".* FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) ORDER BY "capability_logs"."invoked_at" DESC LIMIT 50 OFFSET 0 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_usage_logs.rb:25:in `map'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (0.5ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_usage_logs', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:26.509000', '2026-05-13 13:46:26.515744', '2026-05-13 13:46:26.516023', '2026-05-13 13:46:26.516023') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 9ms (Views: 0.3ms | ActiveRecord: 1.7ms (4 queries, 0 cached) | GC: 0.1ms)
+
+
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.7ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_payment_methods', '1.0', 'stripe', NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:26.504092', '2026-05-13 13:46:27.066903', '2026-05-13 13:46:27.067438', '2026-05-13 13:46:27.067438') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 569ms (Views: 0.1ms | ActiveRecord: 2.3ms (2 queries, 0 cached) | GC: 0.3ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:39 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:39 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:39 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_payment_methods", "payload"=>{}}
+  [1m[36mActor Load (0.2ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/stripe_capability/get_payment_methods.rb:13:in `call'
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_balance", "payload"=>{}}
+  [1m[36mActor Load (0.3ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_balance.rb:11:in `call'
+Processing by Api::CapabilityController#invoke as */*
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  Parameters: {"capability"=>"get_usage_logs", "payload"=>{"limit"=>50}}
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Sum (0.3ms)[0m  [1m[34mSELECT SUM("capability_logs"."total_charged_cents") FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mCapabilityLog Create (2.5ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_balance', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:39.783875', '2026-05-13 13:46:39.785796', '2026-05-13 13:46:39.786154', '2026-05-13 13:46:39.786154') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_usage_logs.rb:21:in `call'
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_usage_logs.rb:22:in `call'
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Load (0.4ms)[0m  [1m[34mSELECT "capability_logs".* FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) ORDER BY "capability_logs"."invoked_at" DESC LIMIT 50 OFFSET 0 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+Completed 200 OK in 9ms (Views: 0.1ms | ActiveRecord: 3.0ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+  ↳ app/capabilities/billing/get_usage_logs.rb:25:in `map'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (0.6ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_usage_logs', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:39.787947', '2026-05-13 13:46:39.793388', '2026-05-13 13:46:39.793656', '2026-05-13 13:46:39.793656') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 8ms (Views: 0.1ms | ActiveRecord: 1.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (1.6ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_payment_methods', '1.0', 'stripe', NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:39.780248', '2026-05-13 13:46:40.266741', '2026-05-13 13:46:40.267545', '2026-05-13 13:46:40.267545') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 494ms (Views: 0.3ms | ActiveRecord: 2.2ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:55 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:55 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:55 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_payment_methods", "payload"=>{}}
+  [1m[36mActor Load (0.2ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+Processing by Api::CapabilityController#invoke as */*
+  ↳ app/capabilities/stripe_capability/get_payment_methods.rb:13:in `call'
+  Parameters: {"capability"=>"get_usage_logs", "payload"=>{"limit"=>50}}
+  [1m[36mCapabilityLog Sum (0.2ms)[0m  [1m[34mSELECT SUM("capability_logs"."total_charged_cents") FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_usage_logs.rb:21:in `call'
+Processing by Api::CapabilityController#invoke as */*
+  [1m[36mCapabilityLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  Parameters: {"capability"=>"get_balance", "payload"=>{}}
+  ↳ app/capabilities/billing/get_usage_logs.rb:22:in `call'
+  [1m[36mActor Load (0.2ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mCapabilityLog Load (0.5ms)[0m  [1m[34mSELECT "capability_logs".* FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) ORDER BY "capability_logs"."invoked_at" DESC LIMIT 50 OFFSET 0 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_balance.rb:11:in `call'
+  ↳ app/capabilities/billing/get_usage_logs.rb:25:in `map'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (5.6ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_balance', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:55.303658', '2026-05-13 13:46:55.306022', '2026-05-13 13:46:55.306334', '2026-05-13 13:46:55.306334') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 10ms (Views: 0.1ms | ActiveRecord: 5.9ms (2 queries, 0 cached) | GC: 2.7ms)
+
+
+  [1m[36mTRANSACTION (4.8ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (5.5ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_usage_logs', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:55.300222', '2026-05-13 13:46:55.307932', '2026-05-13 13:46:55.308218', '2026-05-13 13:46:55.308218') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 15ms (Views: 0.1ms | ActiveRecord: 11.2ms (4 queries, 0 cached) | GC: 2.7ms)
+
+
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (2.1ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_payment_methods', '1.0', 'stripe', NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:55.297156', '2026-05-13 13:46:55.847872', '2026-05-13 13:46:55.848523', '2026-05-13 13:46:55.848523') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 558ms (Views: 0.4ms | ActiveRecord: 2.8ms (2 queries, 0 cached) | GC: 9.6ms)
+
+
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:57 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:57 -0700
+Started POST "/api/capability" for ::1 at 2026-05-13 06:46:57 -0700
+Processing by Api::CapabilityController#invoke as */*
+  Parameters: {"capability"=>"get_balance", "payload"=>{}}
+  [1m[36mActor Load (0.3ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+Processing by Api::CapabilityController#invoke as */*
+  ↳ app/capabilities/billing/get_balance.rb:11:in `call'
+  Parameters: {"capability"=>"get_payment_methods", "payload"=>{}}
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mActor Load (0.1ms)[0m  [1m[34mSELECT "actors".* FROM "actors" WHERE "actors"."id" = 1 LIMIT 1 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+Processing by Api::CapabilityController#invoke as */*
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  ↳ app/capabilities/stripe_capability/get_payment_methods.rb:13:in `call'
+  Parameters: {"capability"=>"get_usage_logs", "payload"=>{"limit"=>50}}
+  [1m[36mCapabilityLog Create (4.1ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_balance', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:57.973040', '2026-05-13 13:46:57.980192', '2026-05-13 13:46:57.980499', '2026-05-13 13:46:57.980499') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mCapabilityLog Sum (0.3ms)[0m  [1m[34mSELECT SUM("capability_logs"."total_charged_cents") FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  ↳ app/capabilities/billing/get_usage_logs.rb:21:in `call'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  [1m[36mCapabilityLog Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  ↳ app/capabilities/billing/get_usage_logs.rb:22:in `call'
+Completed 200 OK in 20ms (Views: 0.1ms | ActiveRecord: 4.5ms (2 queries, 0 cached) | GC: 0.1ms)
+
+
+  [1m[36mCapabilityLog Load (0.2ms)[0m  [1m[34mSELECT "capability_logs".* FROM "capability_logs" WHERE "capability_logs"."actor_id" = '1' AND (total_charged_cents > 0) ORDER BY "capability_logs"."invoked_at" DESC LIMIT 50 OFFSET 0 /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/billing/get_usage_logs.rb:25:in `map'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (0.4ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_usage_logs', '1.0', NULL, NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:57.986208', '2026-05-13 13:46:57.991361', '2026-05-13 13:46:57.991538', '2026-05-13 13:46:57.991538') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 7ms (Views: 0.1ms | ActiveRecord: 1.1ms (4 queries, 0 cached) | GC: 0.1ms)
+
+
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mCapabilityLog Create (2.1ms)[0m  [1m[32mINSERT INTO "capability_logs" ("actor_id", "capability", "version", "provider", "provider_request_id", "raw_cost_cents", "markup_cents", "total_charged_cents", "charged_to", "metadata_json", "status", "error_code", "invoked_at", "completed_at", "created_at", "updated_at") VALUES ('1', 'get_payment_methods', '1.0', 'stripe', NULL, 0, 0, 0, 'actor', NULL, 'success', NULL, '2026-05-13 13:46:57.981459', '2026-05-13 13:46:58.509290', '2026-05-13 13:46:58.510344', '2026-05-13 13:46:58.510344') RETURNING "id" /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT TRANSACTION /*action='invoke',application='RentflowBackend',controller='capability'*/[0m
+  ↳ app/capabilities/base_capability.rb:48:in `execute'
+Completed 200 OK in 544ms (Views: 0.5ms | ActiveRecord: 2.8ms (2 queries, 0 cached) | GC: 1.6ms)
+
+
