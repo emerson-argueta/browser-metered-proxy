@@ -45,6 +45,17 @@ if [ "${1}" == "setup" ]; then
   exit 0
 fi
 
+# Credit management
+# Usage: bin/deploy credits:grant EMAIL=friend@example.com AMOUNT=10
+# Usage: bin/deploy credits:list
+# Usage: bin/deploy credits:balance EMAIL=friend@example.com
+if [[ "${1}" == credits:* ]]; then
+  task="${1}"
+  shift
+  kamal app exec "bin/rails ${task} $*"
+  exit 0
+fi
+
 echo "→ Deploying budget-clear-proxy..."
 kamal deploy
 
