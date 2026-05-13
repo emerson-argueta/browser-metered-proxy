@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Load .env
+if [ ! -f "$ROOT/.env" ]; then
+  echo "ERROR: .env file not found at $ROOT/.env"
+  exit 1
+fi
+
+set -a
+source "$ROOT/.env"
+set +a
+
+# Verify required secrets are set
+REQUIRED=(
+  KAMAL_REGISTRY_PASSWORD
+  SECRET_KEY_BASE
+  ENCRYPTION_KEY
+  PLAID_CLIENT_ID
+  PLAID_SECRET
+  STRIPE_SECRET_KEY
+  STRIPE_WEBHOOK_SECRET
+  STRIPE_PUBLISHABLE_KEY
+)
+
+for var in "${REQUIRED[@]}"; do
+  if [ -z "${!var}" ]; then
+    echo "ERROR: $var is not set in .env"
+    exit 1
+  fi
+done
+
+cd "$ROOT"
+
+# Bootstrap installs Docker on the server (safe to run multiple times)
+if [ "${1}" == "setup" ]; then
+  echo "→ Bootstrapping server (installing Docker)..."
+  kamal server bootstrap
+  echo "→ Running kamal setup..."
+  kamal setup
+  exit 0
+fi
+
+echo "→ Deploying budget-clear-proxy..."
+kamal deploy
+
+echo "✓ Deploy complete"
