@@ -4,6 +4,22 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$SCRIPT_DIR")"
 
+# Parse -c <app> flag (e.g. bin/deploy -c my-other-app)
+CONFIG_FLAG=""
+APP_NAME="budget-clear"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -c)
+      APP_NAME="$2"
+      CONFIG_FLAG="-c config/deploy.${2}.yml"
+      shift 2
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 # Load .env
 if [ ! -f "$ROOT/.env" ]; then
   echo "ERROR: .env file not found at $ROOT/.env"
@@ -38,25 +54,26 @@ cd "$ROOT"
 
 # Bootstrap installs Docker on the server (safe to run multiple times)
 if [ "${1}" == "setup" ]; then
-  echo "→ Bootstrapping server (installing Docker)..."
-  kamal server bootstrap
+  echo "→ Bootstrapping server (installing Docker) for ${APP_NAME}..."
+  kamal server bootstrap $CONFIG_FLAG
   echo "→ Running kamal setup..."
-  kamal setup
+  kamal setup $CONFIG_FLAG
   exit 0
 fi
 
 # Credit management
 # Usage: bin/deploy credits:grant EMAIL=friend@example.com AMOUNT=10
+# Usage: bin/deploy credits:grant EMAIL=friend@example.com AMOUNT=10 -c my-other-app
 # Usage: bin/deploy credits:list
 # Usage: bin/deploy credits:balance EMAIL=friend@example.com
 if [[ "${1}" == credits:* ]]; then
   task="${1}"
   shift
-  kamal app exec "bin/rails ${task} $*"
+  kamal app exec $CONFIG_FLAG "bin/rails ${task} $*"
   exit 0
 fi
 
-echo "→ Deploying budget-clear-proxy..."
-kamal deploy
+echo "→ Deploying ${APP_NAME}-proxy..."
+kamal deploy $CONFIG_FLAG
 
 echo "✓ Deploy complete"
