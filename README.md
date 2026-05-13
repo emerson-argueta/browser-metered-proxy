@@ -207,3 +207,67 @@ Standard Rails API app — runs anywhere Ruby runs:
 - [Kamal](https://kamal-deploy.org) — deploy to any VPS
 
 A `Dockerfile` is included.
+
+### Deploying with Kamal (`bin/deploy`)
+
+The `bin/deploy` script wraps Kamal with secret loading and multi-app support.
+
+**First-time setup:**
+```bash
+bin/deploy setup
+```
+
+**Deploy:**
+```bash
+bin/deploy
+```
+
+**Multi-app deployments:**
+
+Each app gets its own deploy config file:
+```
+config/
+  deploy.yml                # default app (e.g. budget-clear)
+  deploy.my-other-app.yml   # second app
+  deploy.app3.yml           # third app
+```
+
+Use the `-c` flag to target a specific app:
+```bash
+bin/deploy -c my-other-app          # deploy my-other-app
+bin/deploy setup -c my-other-app    # first-time setup for my-other-app
+```
+
+Multiple apps run as separate Docker containers on the same server, each with their own SQLite volume and environment variables.
+
+### Credit management
+
+Grant free credits to users without requiring payment:
+
+```bash
+# Grant $10 to a user
+bin/deploy credits:grant EMAIL=friend@example.com AMOUNT=10
+
+# List all actors and balances
+bin/deploy credits:list
+
+# Check one user's balance
+bin/deploy credits:balance EMAIL=friend@example.com
+
+# Set balance to a specific amount (overwrites)
+bin/deploy credits:set EMAIL=friend@example.com AMOUNT=25
+```
+
+With `-c` for a specific app:
+```bash
+bin/deploy credits:grant -c my-other-app EMAIL=friend@example.com AMOUNT=10
+```
+
+### Environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `MAX_TOPUP_CENTS` | Maximum top-up per transaction in cents (default: `5000` = $50) |
+| `REQUIRE_PAYMENT` | Set to `true` to enforce Stripe payment for credits |
+| `PLAID_ENV` | `sandbox` \| `development` \| `production` |
+| `FRONTEND_ORIGIN` | Comma-separated allowed CORS origins |
