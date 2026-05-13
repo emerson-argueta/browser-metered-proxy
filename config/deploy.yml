@@ -3,7 +3,7 @@ image: ghcr.io/emerson-argueta/budget-clear-proxy
 
 servers:
   web:
-    - 192.168.4.158
+    - 100.97.193.52
 
 ssh:
   user: devadmin
@@ -27,6 +27,7 @@ env:
   secret:
     - SECRET_KEY_BASE
     - ENCRYPTION_KEY
+    - JWT_SECRET
     - PLAID_CLIENT_ID
     - PLAID_SECRET
     - STRIPE_SECRET_KEY

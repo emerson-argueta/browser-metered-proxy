@@ -9002,3 +9002,6 @@ Processing by Api::CapabilityController#quote as */*
 Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
 
 
+[dotenv] Set [36mKAMAL_REGISTRY_PASSWORD[0m, [36mSECRET_KEY_BASE[0m, [36mJWT_SECRET[0m, [36mJWT_EXPIRY_HOURS[0m, [36mAPP_NAME[0m, [36mPLAID_CLIENT_ID[0m, [36mPLAID_SECRET[0m, [36mPLAID_ENV[0m, [36mSTRIPE_SECRET_KEY[0m, [36mSTRIPE_PUBLISHABLE_KEY[0m, [36mSTRIPE_WEBHOOK_SECRET[0m, [36mREQUIRE_PAYMENT[0m, [36mSENDGRID_API_KEY[0m, [36mSENDGRID_FROM_EMAIL[0m, [36mSENDGRID_FROM_NAME[0m, [36mFRONTEND_ORIGIN[0m, [36mENCRYPTION_KEY[0m, [36mDEFAULT_MARKUP_PERCENT[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
