@@ -7,7 +7,8 @@ Rails.application.routes.draw do
     post "auth/reset_password",  to: "auth#reset_password"
 
     # Single capability dispatch
-    post "capability", to: "capability#invoke"
+    post "capability",       to: "capability#invoke"
+    get  "capability/quote", to: "capability#quote"
 
     # Usage & billing (read-only)
     get "usage/log",     to: "usage#log"

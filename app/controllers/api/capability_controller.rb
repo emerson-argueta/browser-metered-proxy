@@ -1,5 +1,21 @@
 module Api
   class CapabilityController < ApplicationController
+    # GET /api/capability/quote?capability=sync_transactions
+    def quote
+      capability_name = params.require(:capability)
+      class_name = CapabilityDispatcher::REGISTRY.dig("capabilities", capability_name)
+      return render json: { error: "Unknown capability: #{capability_name}" }, status: :not_found unless class_name
+
+      capability_class = class_name.constantize
+      costs = CostCalculator.calculate(
+        provider:   capability_class.provider.to_s,
+        capability: capability_class.capability_name
+      )
+      render json: costs.merge(capability: capability_name, provider: capability_class.provider)
+    rescue KeyError => e
+      render json: { error: "Missing required param: #{e.message}" }, status: :unprocessable_entity
+    end
+
     def invoke
       envelope = {}
       if params[:signature].present?
