@@ -2,6 +2,15 @@ module StripeCapability
   module StripeClient
     private
 
+    def max_topup_cents
+      Integer(ENV.fetch("MAX_TOPUP_CENTS", "5000"))
+    end
+
+    def validate_topup_amount!(amount_cents)
+      raise ArgumentError, "amount_cents must be positive" unless amount_cents > 0
+      raise ArgumentError, "Top-up amount exceeds the maximum of #{max_topup_cents / 100} dollars" if amount_cents > max_topup_cents
+    end
+
     def stripe_publishable_key
       ENV.fetch("STRIPE_PUBLISHABLE_KEY")
     end

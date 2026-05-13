@@ -11,7 +11,7 @@ module StripeCapability
 
     def call
       amount_cents = Integer(payload.fetch(:amount_cents))
-      raise ArgumentError, "amount_cents must be positive" unless amount_cents > 0
+      validate_topup_amount!(amount_cents)
 
       actor = Actor.find(actor_id)
       raise ArgumentError, "No saved payment method" unless actor.stripe_customer?

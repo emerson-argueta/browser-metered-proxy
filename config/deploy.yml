@@ -40,6 +40,7 @@ env:
     DEFAULT_MARKUP_PERCENT: "0"
     REQUIRE_PAYMENT: "false"
     PLAID_ENV: production
+    MAX_TOPUP_CENTS: "5000"
 
 volumes:
   - "budget_clear_proxy_storage:/rails/storage"
