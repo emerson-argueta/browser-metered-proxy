@@ -22,7 +22,7 @@ module Billing
         set_default_payment_method(actor, pi)
       end
 
-      actor.credit!(amount_cents)
+      actor.credit_paid!(amount_cents)
 
       {
         credited_cents:      amount_cents,

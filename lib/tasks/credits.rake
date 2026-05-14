@@ -8,7 +8,7 @@ namespace :credits do
     actor = Actor.find_by(email: email.downcase)
     abort "No actor found with email: #{email}" unless actor
 
-    actor.credit!(cents)
+    actor.credit_free!(cents)
     puts "✓ Granted $#{"%.2f" % amount} to #{email}"
     puts "  New balance: $#{"%.2f" % actor.reload.balance_dollars}"
   end

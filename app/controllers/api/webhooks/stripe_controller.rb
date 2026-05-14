@@ -39,7 +39,7 @@ module Api
         actor = Actor.find_by(id: actor_id)
         return unless actor
 
-        actor.credit!(payment_intent.amount)
+        actor.credit_paid!(payment_intent.amount)
 
         CapabilityLog.create!(
           actor_id:            actor_id,

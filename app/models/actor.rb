@@ -4,9 +4,14 @@ class Actor < ApplicationRecord
   validates :email, presence: true,
                     uniqueness: { case_sensitive: false },
                     format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :balance_cents, numericality: { greater_than_or_equal_to: 0 }
+  validates :paid_balance_cents, numericality: { greater_than_or_equal_to: 0 }
+  validates :free_balance_cents, numericality: { greater_than_or_equal_to: 0 }
 
   before_save { self.email = email.downcase }
+
+  def balance_cents
+    paid_balance_cents + free_balance_cents
+  end
 
   def balance_dollars
     balance_cents / 100.0
@@ -16,22 +21,34 @@ class Actor < ApplicationRecord
     balance_cents >= amount_cents
   end
 
-  # Atomically deducts balance. Raises InsufficientBalanceError if balance is too low.
+  # Atomically deducts balance — paid credits first, then free.
   def deduct!(amount_cents)
     with_lock do
       raise InsufficientBalanceError, "Insufficient balance" unless sufficient_balance?(amount_cents)
-      decrement!(:balance_cents, amount_cents)
+
+      from_paid = [paid_balance_cents, amount_cents].min
+      from_free = amount_cents - from_paid
+
+      self.paid_balance_cents -= from_paid
+      self.free_balance_cents -= from_free
+      save!
     end
   end
 
-  def credit!(amount_cents)
-    increment!(:balance_cents, amount_cents)
+  # Credit from a Stripe payment — counts toward real liability.
+  def credit_paid!(amount_cents)
+    with_lock { increment!(:paid_balance_cents, amount_cents) }
+  end
+
+  # Credit as a free grant — does not count toward liability.
+  def credit_free!(amount_cents)
+    with_lock { increment!(:free_balance_cents, amount_cents) }
   end
 
   def generate_password_reset_token!
     update!(
-      password_reset_token:    SecureRandom.urlsafe_base64(32),
-      password_reset_sent_at:  Time.current
+      password_reset_token:   SecureRandom.urlsafe_base64(32),
+      password_reset_sent_at: Time.current
     )
     password_reset_token
   end

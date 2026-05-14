@@ -42,7 +42,7 @@ module StripeCapability
 
       # Credit balance immediately — payment is already confirmed
       raise ArgumentError, "Already credited" if already_credited?(pi.id)
-      actor.credit!(amount_cents)
+      actor.credit_paid!(amount_cents)
 
       {
         credited_cents:      amount_cents,

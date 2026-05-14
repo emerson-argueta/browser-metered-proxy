@@ -9005,3 +9005,33 @@ Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached
 [dotenv] Set [36mKAMAL_REGISTRY_PASSWORD[0m, [36mSECRET_KEY_BASE[0m, [36mJWT_SECRET[0m, [36mJWT_EXPIRY_HOURS[0m, [36mAPP_NAME[0m, [36mPLAID_CLIENT_ID[0m, [36mPLAID_SECRET[0m, [36mPLAID_ENV[0m, [36mSTRIPE_SECRET_KEY[0m, [36mSTRIPE_PUBLISHABLE_KEY[0m, [36mSTRIPE_WEBHOOK_SECRET[0m, [36mREQUIRE_PAYMENT[0m, [36mSENDGRID_API_KEY[0m, [36mSENDGRID_FROM_EMAIL[0m, [36mSENDGRID_FROM_NAME[0m, [36mFRONTEND_ORIGIN[0m, [36mENCRYPTION_KEY[0m, [36mDEFAULT_MARKUP_PERCENT[0m
 [dotenv] Loaded [33m.env[0m
   [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
+[dotenv] Set [36mKAMAL_REGISTRY_PASSWORD[0m, [36mMAX_TOPUP_CENTS[0m, [36mSECRET_KEY_BASE[0m, [36mJWT_SECRET[0m, [36mJWT_EXPIRY_HOURS[0m, [36mAPP_NAME[0m, [36mPLAID_CLIENT_ID[0m, [36mPLAID_SECRET[0m, [36mPLAID_ENV[0m, [36mSTRIPE_SECRET_KEY[0m, [36mSTRIPE_PUBLISHABLE_KEY[0m, [36mSTRIPE_WEBHOOK_SECRET[0m, [36mREQUIRE_PAYMENT[0m, [36mSENDGRID_API_KEY[0m, [36mSENDGRID_FROM_EMAIL[0m, [36mSENDGRID_FROM_NAME[0m, [36mFRONTEND_ORIGIN[0m, [36mENCRYPTION_KEY[0m, [36mDEFAULT_MARKUP_PERCENT[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mKAMAL_REGISTRY_PASSWORD[0m, [36mMAX_TOPUP_CENTS[0m, [36mSECRET_KEY_BASE[0m, [36mJWT_SECRET[0m, [36mJWT_EXPIRY_HOURS[0m, [36mAPP_NAME[0m, [36mPLAID_CLIENT_ID[0m, [36mPLAID_SECRET[0m, [36mPLAID_ENV[0m, [36mSTRIPE_SECRET_KEY[0m, [36mSTRIPE_PUBLISHABLE_KEY[0m, [36mSTRIPE_WEBHOOK_SECRET[0m, [36mREQUIRE_PAYMENT[0m, [36mSENDGRID_API_KEY[0m, [36mSENDGRID_FROM_EMAIL[0m, [36mSENDGRID_FROM_NAME[0m, [36mFRONTEND_ORIGIN[0m, [36mENCRYPTION_KEY[0m, [36mDEFAULT_MARKUP_PERCENT[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
+Migrating to SplitBalanceIntoPaidAndFreeCredits (20260514125808)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "actors" ADD "paid_balance_cents" integer DEFAULT 0 NOT NULL /*application='RentflowBackend'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "actors" ADD "free_balance_cents" integer DEFAULT 0 NOT NULL /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[33mUPDATE actors SET paid_balance_cents = COALESCE((SELECT balance_cents FROM actors a2 WHERE a2.id = actors.id), 0) /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aactors" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar NOT NULL, "password_digest" varchar NOT NULL, "balance_cents" integer DEFAULT 0 NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "payment_customer_id" varchar, "payment_provider" varchar, "password_reset_token" varchar, "password_reset_sent_at" datetime(6), "paid_balance_cents" integer DEFAULT 0 NOT NULL, "free_balance_cents" integer DEFAULT 0 NOT NULL) /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_aactors_on_email" ON "aactors" ("email") /*application='RentflowBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aactors" ("id","email","password_digest","balance_cents","created_at","updated_at","payment_customer_id","payment_provider","password_reset_token","password_reset_sent_at","paid_balance_cents","free_balance_cents")
+                     SELECT "id","email","password_digest","balance_cents","created_at","updated_at","payment_customer_id","payment_provider","password_reset_token","password_reset_sent_at","paid_balance_cents","free_balance_cents" FROM "actors" /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "actors" /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "actors" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar NOT NULL, "password_digest" varchar NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "payment_customer_id" varchar, "payment_provider" varchar, "password_reset_token" varchar, "password_reset_sent_at" datetime(6), "paid_balance_cents" integer DEFAULT 0 NOT NULL, "free_balance_cents" integer DEFAULT 0 NOT NULL) /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_actors_on_email" ON "actors" ("email") /*application='RentflowBackend'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "actors" ("id","email","password_digest","created_at","updated_at","payment_customer_id","payment_provider","password_reset_token","password_reset_sent_at","paid_balance_cents","free_balance_cents")
+                     SELECT "id","email","password_digest","created_at","updated_at","payment_customer_id","payment_provider","password_reset_token","password_reset_sent_at","paid_balance_cents","free_balance_cents" FROM "aactors" /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE "aactors" /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='RentflowBackend'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260514125808') RETURNING "version" /*application='RentflowBackend'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='RentflowBackend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='RentflowBackend'*/[0m
