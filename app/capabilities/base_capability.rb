@@ -1,3 +1,5 @@
+class BetaModeError < StandardError; end
+
 class BaseCapability
   DEFINITION = {
     capability: nil,

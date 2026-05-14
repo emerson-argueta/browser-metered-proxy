@@ -41,6 +41,7 @@ env:
     REQUIRE_PAYMENT: "false"
     PLAID_ENV: production
     MAX_TOPUP_CENTS: "5000"
+    BETA_MODE: "true"
 
 volumes:
   - "budget_clear_proxy_storage:/rails/storage"

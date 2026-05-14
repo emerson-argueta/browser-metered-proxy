@@ -10,6 +10,7 @@ module StripeCapability
     }.freeze
 
     def call
+      raise_if_beta_mode!
       amount_cents = Integer(payload.fetch(:amount_cents))
       validate_topup_amount!(amount_cents)
 

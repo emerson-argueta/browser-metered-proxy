@@ -35,6 +35,8 @@ module Api
       render json: { error: e.message }, status: :unprocessable_entity
     rescue KeyError => e
       render json: { error: "Missing required param: #{e.message}" }, status: :unprocessable_entity
+    rescue BetaModeError => e
+      render json: { error: e.message, code: "beta_mode" }, status: :unprocessable_entity
     rescue Actor::InsufficientBalanceError => e
       render json: { error: e.message, code: "insufficient_balance" }, status: :payment_required
     rescue ActiveRecord::RecordNotFound

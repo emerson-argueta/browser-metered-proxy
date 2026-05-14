@@ -2,6 +2,14 @@ module StripeCapability
   module StripeClient
     private
 
+    def beta_mode?
+      ENV["BETA_MODE"] == "true"
+    end
+
+    def raise_if_beta_mode!
+      raise BetaModeError, "Payments are not enabled yet. Contact the app owner for beta access." if beta_mode?
+    end
+
     def max_topup_cents
       Integer(ENV.fetch("MAX_TOPUP_CENTS", "5000"))
     end
