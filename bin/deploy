@@ -76,4 +76,7 @@ fi
 echo "→ Deploying ${APP_NAME}-proxy..."
 kamal deploy $CONFIG_FLAG
 
+echo "→ Running migrations..."
+kamal app exec $CONFIG_FLAG --reuse "bin/rails db:migrate"
+
 echo "✓ Deploy complete"

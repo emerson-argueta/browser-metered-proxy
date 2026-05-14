@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -e
-echo "→ Running migrations..."
-kamal app exec --reuse "bin/rails db:migrate"
-echo "✓ Migrations complete"
