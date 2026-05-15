@@ -72,30 +72,20 @@ module Api
     end
 
     def send_reset_email(actor, reset_url)
-      return unless ENV["SENDGRID_API_KEY"].present?
+      return unless ENV["RESEND_API_KEY"].present?
 
-      sg = SendGrid::API.new(api_key: ENV["SENDGRID_API_KEY"])
-      mail = SendGrid::Mail.new
-      mail.from = SendGrid::Email.new(
-        email: ENV.fetch("SENDGRID_FROM_EMAIL", "noreply@example.com"),
-        name:  ENV.fetch("SENDGRID_FROM_NAME", ENV.fetch("APP_NAME", "App"))
-      )
-      mail.subject = "Reset your #{ENV.fetch("APP_NAME", "App")} password"
-
-      personalization = SendGrid::Personalization.new
-      personalization.add_to(SendGrid::Email.new(email: actor.email))
-      mail.add_personalization(personalization)
-      mail.add_content(SendGrid::Content.new(
-        type:  "text/html",
-        value: <<~HTML
+      Resend.api_key = ENV["RESEND_API_KEY"]
+      Resend::Emails.send({
+        from:    "#{ENV.fetch("APP_NAME", "App")} <#{ENV.fetch("RESEND_FROM_EMAIL")}>",
+        to:      actor.email,
+        subject: "Reset your #{ENV.fetch("APP_NAME", "App")} password",
+        html:    <<~HTML
           <p>Hi,</p>
           <p>Click the link below to reset your password. This link expires in 2 hours.</p>
           <p><a href="#{reset_url}">Reset Password</a></p>
           <p>If you didn't request this, you can ignore this email.</p>
         HTML
-      ))
-
-      sg.client.mail._("send").post(request_body: mail.to_json)
+      })
     rescue => e
       Rails.logger.error "[auth] password reset email failed: #{e.message}"
     end

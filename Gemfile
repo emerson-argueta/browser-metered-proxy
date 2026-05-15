@@ -44,8 +44,8 @@ gem "plaid"
 # Stripe for payment processing
 gem "stripe"
 
-# SendGrid for transactional email
-gem "sendgrid-ruby"
+# Resend for transactional email
+gem "resend"
 
 # Encryption for Plaid access tokens at rest
 gem "attr_encrypted", "~> 4.0"
