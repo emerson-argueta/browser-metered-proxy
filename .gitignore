@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+.kamal/secrets
 
 # Rails credentials
 /config/master.key
