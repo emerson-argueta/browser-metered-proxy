@@ -18,11 +18,10 @@ module Plaid
       removed  = []
       last_request_id = nil
 
-      # Fetch one page per invocation to avoid proxy timeouts on large histories.
+      # Fetch up to 3 pages per invocation to avoid proxy timeouts on large histories.
       # The client stores next_cursor and calls again until has_more is false.
-      MAX_PAGES = 3
-      has_more  = false
-      MAX_PAGES.times do
+      has_more = false
+      3.times do
         request = ::Plaid::TransactionsSyncRequest.new(
           access_token: item.access_token,
           cursor: cursor
