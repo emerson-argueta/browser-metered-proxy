@@ -41,7 +41,7 @@ module Api
       render json: { error: e.message, code: "insufficient_balance" }, status: :payment_required
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Record not found" }, status: :not_found
-    rescue => e
+    rescue Exception => e
       render json: { error: e.message }, status: :unprocessable_entity
     end
   end
