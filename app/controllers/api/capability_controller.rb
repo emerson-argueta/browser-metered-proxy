@@ -3,7 +3,7 @@ module Api
     # GET /api/capability/quote?capability=sync_transactions
     def quote
       capability_name = params.require(:capability)
-      class_name = CapabilityDispatcher::REGISTRY.dig("capabilities", capability_name)
+      class_name = CapabilityDispatcher.registry.dig("capabilities", capability_name)
       return render json: { error: "Unknown capability: #{capability_name}" }, status: :not_found unless class_name
 
       capability_class = class_name.constantize
