@@ -5,9 +5,8 @@ module BrowserMeteredEngine
 
     # After the host app's initializers run, merge capabilities and providers from both
     # the engine config and the host app config (host app wins on conflicts).
-    initializer "browser_metered_engine.load_registry", after: :load_config_initializers do
-      ::CapabilityDispatcher.load_registry!
-      ::CostCalculator.load_config!
-    end
+    # CapabilityDispatcher.registry and CostCalculator.config are lazy-loaded
+    # on first use, merging engine config with the host app's overrides.
+    # No explicit boot-time loading needed.
   end
 end
