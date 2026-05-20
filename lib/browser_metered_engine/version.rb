@@ -1,3 +1,6 @@
 module BrowserMeteredEngine
-  VERSION = "0.1.0"
+  module Version
+    STRING = "0.1.0"
+  end
+  VERSION = Version::STRING
 end
