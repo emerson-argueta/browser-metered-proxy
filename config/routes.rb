@@ -1,4 +1,6 @@
-BrowserMeteredEngine::Engine.routes.draw do
+Rails.application.routes.draw do
+  get "up" => "rails/health#show", as: :rails_health_check
+
   namespace :api do
     # Auth
     post "auth/register",        to: "auth#register"
@@ -20,6 +22,4 @@ BrowserMeteredEngine::Engine.routes.draw do
       post "stripe",  to: "stripe#receive"
     end
   end
-
-  get "up" => "rails/health#show", as: :rails_health_check
 end
