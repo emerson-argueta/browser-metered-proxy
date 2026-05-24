@@ -44,6 +44,7 @@ env:
     PLAID_ENV: production
     MAX_TOPUP_CENTS: "5000"
     BETA_MODE: "true"
+    FRONTEND_ORIGIN: "https://budget-clear.pages.dev,http://localhost:3200"
 
 volumes:
   - "budget_clear_proxy_storage:/rails/storage"
