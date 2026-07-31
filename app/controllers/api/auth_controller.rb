@@ -1,6 +1,6 @@
 module Api
   class AuthController < ApplicationController
-    skip_before_action :authenticate_actor!
+    skip_before_action :authenticate_actor!, only: %i[register login refresh forgot_password reset_password]
 
     # POST /api/auth/register
     def register
@@ -11,7 +11,7 @@ module Api
       )
 
       if actor.save
-        render json: { token: issue_token(actor) }, status: :created
+        render json: issue_tokens(actor), status: :created
       else
         render json: { errors: actor.errors.full_messages }, status: :unprocessable_entity
       end
@@ -22,10 +22,32 @@ module Api
       actor = Actor.find_by(email: params.require(:email)&.downcase)
 
       if actor&.authenticate(params.require(:password))
-        render json: { token: issue_token(actor) }
+        render json: issue_tokens(actor)
       else
         render json: { error: "Invalid email or password" }, status: :unauthorized
       end
+    end
+
+    # POST /api/auth/refresh
+    def refresh
+      digest = Digest::SHA256.hexdigest(params.require(:refresh_token))
+      refresh_token = RefreshToken.find_by(token_digest: digest)
+
+      if refresh_token.nil? || refresh_token.revoked? || refresh_token.expired?
+        return render json: { error: "Invalid or expired refresh token" }, status: :unauthorized
+      end
+
+      refresh_token.update!(revoked_at: Time.current)
+      render json: issue_tokens(refresh_token.actor)
+    end
+
+    # POST /api/auth/logout
+    def logout
+      digest = Digest::SHA256.hexdigest(params.require(:refresh_token))
+      RefreshToken.find_by(token_digest: digest, actor_id: @current_actor_id)&.update!(revoked_at: Time.current)
+
+      # Always respond the same way to avoid leaking whether the token was valid
+      render json: { message: "Logged out" }
     end
 
     # POST /api/auth/forgot_password
@@ -55,7 +77,7 @@ module Api
         password_confirmation: params.require(:password_confirmation)
       )
         actor.clear_password_reset!
-        render json: { token: issue_token(actor) }
+        render json: issue_tokens(actor)
       else
         render json: { errors: actor.errors.full_messages }, status: :unprocessable_entity
       end
@@ -63,12 +85,27 @@ module Api
 
     private
 
+    # Builds the { token:, refresh_token: } payload shared by register/login/refresh/reset_password.
+    def issue_tokens(actor)
+      { token: issue_token(actor), refresh_token: issue_refresh_token(actor) }
+    end
+
     def issue_token(actor)
       payload = {
         actor_id: actor.id.to_s,
         exp: ENV.fetch("JWT_EXPIRY_HOURS", "720").to_i.hours.from_now.to_i
       }
       JWT.encode(payload, jwt_secret, "HS256")
+    end
+
+    def issue_refresh_token(actor)
+      raw = SecureRandom.hex(32)
+      RefreshToken.create!(
+        actor: actor,
+        token_digest: Digest::SHA256.hexdigest(raw),
+        expires_at: ENV.fetch("REFRESH_TOKEN_EXPIRY_DAYS", "365").to_i.days.from_now
+      )
+      raw
     end
 
     def send_reset_email(actor, reset_url)

@@ -1,8 +1,12 @@
 Rails.application.routes.draw do
+  get "up" => "rails/health#show", as: :rails_health_check
+
   namespace :api do
     # Auth
-    post "auth/register",       to: "auth#register"
-    post "auth/login",          to: "auth#login"
+    post "auth/register",        to: "auth#register"
+    post "auth/login",           to: "auth#login"
+    post "auth/refresh",         to: "auth#refresh"
+    post "auth/logout",          to: "auth#logout"
     post "auth/forgot_password", to: "auth#forgot_password"
     post "auth/reset_password",  to: "auth#reset_password"
 
@@ -20,6 +24,4 @@ Rails.application.routes.draw do
       post "stripe",  to: "stripe#receive"
     end
   end
-
-  get "up" => "rails/health#show", as: :rails_health_check
 end
